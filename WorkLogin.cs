@@ -33,6 +33,7 @@ namespace ZQDanmuTest
 		string userinfo_url = "http://www.zhanqi.tv/api/user/user.info";
 		string user_follow = "http://www.zhanqi.tv/api/user/follow.listall?";
 		string Gaia_room = "http://www.zhanqi.tv/api/static/live.roomid/52320.json";
+		string Other_room = "http://www.zhanqi.tv/api/static/live.roomid/";
 		string user_coin = "http://www.zhanqi.tv/api/user/rich.get?";
 		string fans_board = "http://www.zhanqi.tv/api/static/room.fansweekrank/52320-10.json";
 		string gaia_enter = "http://www.zhanqi.tv/api/user/record.watch?type=1&id=52320";
@@ -137,7 +138,7 @@ namespace ZQDanmuTest
 			
 		}
 		
-		//获取房间详细
+		//获取用户认证详细
 		public RoomDetail GetRoomDetail()
 		{
 	 
@@ -159,7 +160,7 @@ namespace ZQDanmuTest
 			return roomdetail ;
 		 
 		}
-			//获取房间详细
+			//获取用户认证详细
 		public RoomDetail GetRoomDetail(int uid,string resi)
 		{
 	 
@@ -202,6 +203,11 @@ namespace ZQDanmuTest
 		{
 			return GetUrlJson(Gaia_room, false);
 		}
+		public JObject GetOtherRoom(string str)
+		{
+			return GetUrlJson(Other_room+str+".json", false);
+		}
+		
  
 		public JObject LogOut()
 		{

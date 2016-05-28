@@ -75,6 +75,11 @@
   <ItemGroup>
     <Compile Include="Channel.cs" />
     <Compile Include="ChatServerIP.cs" />
+    <Compile Include="FireWorksList.cs" />
+    <Compile Include="FireWorksList.Designer.cs">
+      <DependentUpon>FireWorksList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FireWorksThread.cs" />
     <Compile Include="GaiaRoom.cs" />
     <Compile Include="HttpHelper.cs" />
     <Compile Include="InitailServer.cs" />
@@ -96,6 +101,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FireWorksList.resx">
+      <DependentUpon>FireWorksList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

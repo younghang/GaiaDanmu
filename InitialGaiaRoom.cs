@@ -18,16 +18,23 @@ namespace ZQDanmuTest
 	/// </summary>
 	public class InitialGaiaRoom
 	{
-		public InitialGaiaRoom()
+		public InitialGaiaRoom(bool otherRoom=false)
 		{
+			other_Room=otherRoom;
 			thInitial=new Thread(new ThreadStart(Initial));
 			worklog=new WorkLogin();
 			thInitial.Start();
 		}
+		bool other_Room=false;
 		WorkLogin worklog;
+		public string otherRoomID="";
 		public static bool FINISH_INITIAL_GAIA_ROOM=false;
 		void Initial()
 		{
+			if (other_Room) {
+				Thread.Sleep(1000);
+				jsongaiaRoom=worklog.GetOtherRoom(otherRoomID);
+			}else
 			  jsongaiaRoom=worklog.GetGaiaRoom();
 			if (jsongaiaRoom!=null) {
 				

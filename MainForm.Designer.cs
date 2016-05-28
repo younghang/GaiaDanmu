@@ -19,6 +19,7 @@ namespace ZQDanmuTest
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.Button btn_SendMessage;
 		private System.Windows.Forms.CheckBox IPCheck;
+		private System.Windows.Forms.CheckBox fireCheck;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -46,6 +47,7 @@ namespace ZQDanmuTest
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.btn_SendMessage = new System.Windows.Forms.Button();
 			this.IPCheck = new System.Windows.Forms.CheckBox();
+			this.fireCheck = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// richTextBox1
@@ -55,7 +57,7 @@ namespace ZQDanmuTest
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.richTextBox1.Location = new System.Drawing.Point(12, 1);
 			this.richTextBox1.Name = "richTextBox1";
-			this.richTextBox1.Size = new System.Drawing.Size(503, 487);
+			this.richTextBox1.Size = new System.Drawing.Size(573, 486);
 			this.richTextBox1.TabIndex = 0;
 			this.richTextBox1.Text = "";
 			this.richTextBox1.TextChanged += new System.EventHandler(this.RichTextBox1TextChanged);
@@ -64,7 +66,7 @@ namespace ZQDanmuTest
 			// 
 			// btn_Send
 			// 
-			this.btn_Send.Location = new System.Drawing.Point(366, 485);
+			this.btn_Send.Location = new System.Drawing.Point(350, 485);
 			this.btn_Send.Name = "btn_Send";
 			this.btn_Send.Size = new System.Drawing.Size(72, 25);
 			this.btn_Send.TabIndex = 1;
@@ -91,18 +93,28 @@ namespace ZQDanmuTest
 			// 
 			// IPCheck
 			// 
-			this.IPCheck.Location = new System.Drawing.Point(444, 489);
+			this.IPCheck.Location = new System.Drawing.Point(443, 489);
 			this.IPCheck.Name = "IPCheck";
-			this.IPCheck.Size = new System.Drawing.Size(72, 19);
+			this.IPCheck.Size = new System.Drawing.Size(39, 19);
 			this.IPCheck.TabIndex = 3;
 			this.IPCheck.Text = "IP";
 			this.IPCheck.UseVisualStyleBackColor = true;
+			// 
+			// fireCheck
+			// 
+			this.fireCheck.Location = new System.Drawing.Point(488, 489);
+			this.fireCheck.Name = "fireCheck";
+			this.fireCheck.Size = new System.Drawing.Size(78, 19);
+			this.fireCheck.TabIndex = 3;
+			this.fireCheck.Text = "烟花测试";
+			this.fireCheck.UseVisualStyleBackColor = true;
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(527, 511);
+			this.ClientSize = new System.Drawing.Size(597, 510);
+			this.Controls.Add(this.fireCheck);
 			this.Controls.Add(this.IPCheck);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.btn_SendMessage);

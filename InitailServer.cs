@@ -53,7 +53,7 @@ namespace ZQDanmuTest
 					ShowMessage("连接服务器成功");
 
 				} catch (Exception e) {
-					ShowMessage(e.Message + "连接服务器失败，请按回车键退出！");
+					ShowMessage(e.Message + "连接服务器失败，请退出！");
 					return;
 					
 				}
@@ -68,9 +68,9 @@ namespace ZQDanmuTest
 				if (!beat)
 					ShowMessage("向服务器发送消息成功：" + sendMessage);
 			} catch (Exception e) {
-				ShowMessage("向服务器发送消息Failed!关闭连接" + e.StackTrace);
-				serverSocket.Shutdown(SocketShutdown.Both);
-				serverSocket.Close();
+				ShowMessage("向服务器发送消息Failed!   请关闭软件后，尝试重新连接");
+//				serverSocket.Shutdown(SocketShutdown.Both);
+//				serverSocket.Close();
 				
 			}
 			//等待300m秒钟
@@ -309,7 +309,7 @@ namespace ZQDanmuTest
 				}
 				
 				
-			} catch (Exception e) {
+			} catch (Exception) {
 //				ShowMessage("聊天连接异常，请退出");
 //				Disposed();
 				return;
@@ -374,7 +374,7 @@ namespace ZQDanmuTest
 						if (permission == 10) {
 							fangguan = "[房管]";
 						}
-						ShowInfo = slevels + name + " :" + fangguan + strlevel + "::" + content + "    " + ip;
+						ShowInfo = slevels +fangguan + strlevel + " :" +  name + "::" + content + "    " + ip;
 //							ShowInfo = jsonObject.ToString();
 						break;
 					case "Gift.Use":
@@ -412,7 +412,9 @@ namespace ZQDanmuTest
 					case "Level.Fans":				 
 						ShowInfo = "";
 						break;
-						
+					case "useronline":		  
+						ShowInfo = "";
+						break;
 					case "timegiftbro":
 						string	gname = (string)jsonObject.GetValue("gname");
 						name = (string)jsonObject.GetValue("name");
@@ -437,7 +439,7 @@ namespace ZQDanmuTest
 					case "notefanslevel":
 						string fansname = (string)jsonObject["data"]["fansname"];
 						int fanslevel = (int)jsonObject["data"]["fanslevel"];
-						ShowInfo = fanslevel + "级:" + fansname + "进入房间                 ";
+						ShowInfo = fanslevel + "级:" + fansname + "进入直播间                 ";
 						break;
 					case "live":
 						ShowInfo = "";
@@ -460,8 +462,9 @@ namespace ZQDanmuTest
 					case "firebro":
 						string code = (string)jsonObject.GetValue("code");
 						string slevel = (string)jsonObject.GetValue("slevel");
-						string url = "http://www.zhanqi.tv/" + code;
+						
 						string roomid = ((int)jsonObject.GetValue("roomid")).ToString();
+						string url = "http://www.zhanqi.tv/" + code + "$" + roomid;
 						ShowInfo = "这里有烟花" + url + "               ";
 						break;
 					default:
@@ -475,12 +478,15 @@ namespace ZQDanmuTest
 				
 				return;
 				
-				ShowMessage(jsonObject.ToString());
+				 
 				
 
+			} catch (OutOfMemoryException) {
+				ShowMessage("消息格式出错");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				ShowMessage(e.Message + e.StackTrace);
+//				ShowMessage(e.Message );
+				ShowMessage("接收消息出错");
 			}
 			
 			

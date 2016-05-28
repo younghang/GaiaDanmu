@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using GaiaDanmu;
 
 namespace ZQDanmuTest
 {
@@ -30,8 +31,8 @@ namespace ZQDanmuTest
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
-			InitializeComponent();		 
-		 
+			InitializeComponent();
+			
 			StartInitial();
 			
 //			Data data=new Data();
@@ -41,21 +42,21 @@ namespace ZQDanmuTest
 //			 RoomDetail rom=new RoomDetail();
 //			 rom.data=data;
 //			 richTextBox1.Text= rom.GetSSID();
-			 
-		 
-		 
-       
-	 
- 
-		 
+			
+			
+			
+			
+			
+			
+			
 		}
 		InitialRoomDetial initialroom;
 		InitialGaiaRoom initialGaiaroom;
 		Thread initailSidThread;
 		Thread runningMSGThread;
 		void StartRunning()
-		{	
-			ShowMessage("开始连接弹幕服务器。。。");			
+		{
+			ShowMessage("开始连接弹幕服务器。。。");
 			if (runningMSGThread == null || !runningMSGThread.IsAlive) {
 				runningMSGThread = new Thread(new  ThreadStart(TestConnectionServer));
 				runningMSGThread.Start();
@@ -70,7 +71,7 @@ namespace ZQDanmuTest
 			ShowMessage("初始化用户认证的数据。。。");
 			initialroom = new InitialRoomDetial();
 			initialGaiaroom = new InitialGaiaRoom();
-		
+			
 		}
 		void InitialRoom()
 		{
@@ -92,8 +93,8 @@ namespace ZQDanmuTest
 			//启动
 			StartRunning();
 		}
-	 
-	 
+		
+		
 		InitailServer initialServer = null;
 		static string strMessage = "";
 		string GetLoginString()
@@ -101,11 +102,11 @@ namespace ZQDanmuTest
 			string login = "";
 			try {
 				login = File.ReadAllText("loginstr.txt");
-			 
+				
 			} catch {
 				login = "";
 			}
-		   
+			
 			return login;
 		}
 		void TestConnectionServer()
@@ -120,12 +121,12 @@ namespace ZQDanmuTest
 			initialServer.ShowMessage += ShowMessage;
 			initialServer.ConnectServerStep1();
 			initialServer.ConnectServerStep2();
-			string login = GetLoginString();			
-			initialServer.ConnectServerStep3(login);			 
+			string login = GetLoginString();
+			initialServer.ConnectServerStep3(login);
 			initialServer.ConnectServerStep4();
 			if (login != "") {
 				ShowMessage("登陆文件存在，尝试用户登陆");
-				initialServer.ConnectServerStep5("大哥好0.0");
+				initialServer.ConnectServerStep5("0.0");
 			}
 			
 //			initialServer.ConnectServerStep4("1+2");
@@ -134,55 +135,73 @@ namespace ZQDanmuTest
 			//为了发送弹幕,其实没必要，这样会让CPU保持20%的运行，线程自己活着在
 //			while(RUNNING)
 //			{
-//				
+//
 //				if (InitailServer.MESSAGE) {
 //					ShowMessage("Message");
 //					if (strMessage!="") {
 //						initialServer.ConnectServerStep5(strMessage);
 //					}
-//					InitailServer.MESSAGE=false;				 
+//					InitailServer.MESSAGE=false;
 //				}
-//				
+//
 //			}
 		}
+		FireWorksList fl = null;
 		void ShowMessage(string str)
 		{
-			if (richTextBox1.InvokeRequired) {
-				// 当一个控件的InvokeRequired属性值为真时，说明有一个创建它以外的线程想访问它
-				Action<string> actionDelegate = (x) => { 
-					int pos = x.IndexOf('$');
-					int len = richTextBox1.Text.Length;
-					if (!IPCheck.Checked && x.Contains(".")) {
-						x = x.Substring(0, x.Length - 15);
-					}
-					if (x.Contains("www.zhanqi.tv")) {
-//                		MessageBox.Show(x);
-					}
-//                	if (runningMSGThread!=null) {
-//                		x+=runningMSGThread.IsAlive?"true":"false";
-//                	}
-					this.richTextBox1.Text += x + "\n"; 
-					richTextBox1.Select(len, pos + len);
-					richTextBox1.SelectionColor = Color.LimeGreen;
-					richTextBox1.SelectionBackColor = Color.White;
-					richTextBox1.HideSelection = false;
-                	
-                
-				};
-				// 或者
-				// Action<string> actionDelegate = delegate(string txt) { this.label2.Text = txt; };
-				this.richTextBox1.Invoke(actionDelegate, str);
-			} else {
-				this.richTextBox1.Text += str + "\n";
+			try {
+				if (richTextBox1.InvokeRequired) {
+					// 当一个控件的InvokeRequired属性值为真时，说明有一个创建它以外的线程想访问它
+					Action<string> actionDelegate = (x) => {
+						int pos = x.IndexOf(':');
+						int pos2 = x.IndexOf("::");
+						int len = richTextBox1.Text.Length;
+						if (!IPCheck.Checked && x.Contains(".")) {
+							x = x.Substring(0, x.Length - 15);
+						}
+						if (x.Contains("www.zhanqi.tv")) {
+							string rooid=x.Split('$')[1];
+							x=x.Split('$')[0];
+							
+							if(fireCheck.Checked){
+								if (fl==null) {
+									fl=new FireWorksList();
+									fl.Show();
+								}
+								fl.AddRoomid(rooid);
+							}
+						}
+					 
+						this.richTextBox1.AppendText(x + "\n");
+						richTextBox1.Select(len, pos);
+						richTextBox1.SelectionColor = Color.LimeGreen;
+						richTextBox1.Select(len+pos,  pos2-pos);
+						richTextBox1.SelectionColor = Color.Blue;
+						richTextBox1.Select(len+pos2,  x.Length-pos2);
+//						richTextBox1.SelectionColor = Color.Fuchsia;
+						richTextBox1.SelectionColor = Color.Red;
+						richTextBox1.SelectionBackColor = Color.White;
+						richTextBox1.HideSelection = false;
+						
+						
+					};
+					// 或者
+					// Action<string> actionDelegate = delegate(string txt) { this.label2.Text = txt; };
+					this.richTextBox1.Invoke(actionDelegate, str);
+				} else {
+					this.richTextBox1.AppendText( str + "\n");
+				}
+			} catch {
+				ShowMessage("显示信息出错");
 			}
 
-		 
+			
 		}
 		void Btn_SendClick(object sender, EventArgs e)
 		{
 //			richTextBox1.Text+= GetTimeStamp()+"\n";
 			InitailServer.RUN_CONNECTION = !InitailServer.RUN_CONNECTION;
-			 
+			
 			string info = "";
 			if (InitailServer.RUN_CONNECTION) {
 				info = "启动接收";
@@ -192,7 +211,7 @@ namespace ZQDanmuTest
 				info = "停止接收";
 				btn_Send.Text = "启动";
 			}
-				
+			
 			ShowMessage(info);
 			RUNNING = !RUNNING;
 		}
@@ -211,6 +230,65 @@ namespace ZQDanmuTest
 			
 			return ret;
 		}
+		
+		
+		
+		void Btn_SendMessageClick(object sender, EventArgs e)
+		{
+			
+			if (initailSidThread != null && initailSidThread.IsAlive) {
+				ShowMessage("线程还活着");
+			}
+			
+			if (initialServer == null) {
+				ShowMessage("InitialServer 对象没有了");
+				return;
+			}
+			InitailServer.MESSAGE = true;
+			strMessage = textBox1.Text;
+			initialServer.ConnectServerStep5(strMessage);
+			InitailServer.MESSAGE = false;
+		}
+		void RichTextBox1TextChanged(object sender, EventArgs e)
+		{
+//		    if (!Roll) {
+//		    	 richTextBox1.HideSelection=!Roll;
+//		    }
+			richTextBox1.HideSelection = false;
+//
+//			 richTextBox1.Select();
+			richTextBox1.SelectionStart = richTextBox1.Text.Length;
+//
+//			richTextBox1.ScrollToCaret();
+		}
+		void MainFormFormClosed(object sender, FormClosedEventArgs e)
+		{
+			InitialRoomDetial.FINISH_INITIAL_ROOM = true;
+			InitialGaiaRoom.FINISH_INITIAL_GAIA_ROOM = true;
+			if (initialServer != null) {
+				initialServer.Disposed();
+			}
+			if (runningMSGThread != null) {
+				runningMSGThread.Abort();
+			}
+			
+		}
+		
+		void RichTextBox1MouseEnter(object sender, EventArgs e)
+		{
+//			textBox1.Focus();
+//			richTextBox1.HideSelection=true;
+		}
+		void RichTextBox1MouseLeave(object sender, EventArgs e)
+		{
+			
+		}
+		
+		
+		
+		
+		
+		
 		#region MD5测试
 		
 		public  string   GetMD5(string   myString)
@@ -228,17 +306,17 @@ namespace ZQDanmuTest
 		}
 		public string GetMDfive(string s)
 		{
- 
-			MD5 md = new MD5CryptoServiceProvider();  
-			byte[] ss = md.ComputeHash(Encoding.UTF8.GetBytes(s));  
-			return byteArrayToHexString(ss);  
- 
+			
+			MD5 md = new MD5CryptoServiceProvider();
+			byte[] ss = md.ComputeHash(Encoding.UTF8.GetBytes(s));
+			return byteArrayToHexString(ss);
+			
 		}
 		public  void TestMD5()
 		{
 			string a; //加密前数据
 			a = 107616417 + 1798171239 + ">y,V4{{][$@s]qS3" + 1463742150;
-		 
+			
 			string b; //加密后数据
 //			b = System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(a, "MD5");
 //			byte[] result = Encoding.Default.GetBytes(a.Trim());    //tbPass为输入密码的文本框
@@ -251,7 +329,7 @@ namespace ZQDanmuTest
 			string c = Convert.ToBase64String(bytes);
 			richTextBox1.Text = c;
 		}
-				
+		
 		private static string[] HexCode = {
 			"0",
 			"1",
@@ -293,60 +371,6 @@ namespace ZQDanmuTest
 		}
 		
 		#endregion
-		
-		
-		void Btn_SendMessageClick(object sender, EventArgs e)
-		{
-	
-			if (initailSidThread != null && initailSidThread.IsAlive) {
-				ShowMessage("线程还活着");
-			}
-			
-			if (initialServer == null) {
-				ShowMessage("InitialServer 对象没有了");
-				return;
-			}
-			InitailServer.MESSAGE = true;
-			strMessage = textBox1.Text;
-			initialServer.ConnectServerStep5(strMessage);
-			InitailServer.MESSAGE = false;
-		}
-		void RichTextBox1TextChanged(object sender, EventArgs e)
-		{
-//		    if (!Roll) {
-//		    	 richTextBox1.HideSelection=!Roll;
-//		    }
-			 richTextBox1.HideSelection=false;
-//			
-//			 richTextBox1.Select();
-			richTextBox1.SelectionStart = richTextBox1.Text.Length;
-//			
-//			richTextBox1.ScrollToCaret();
-		}
-		void MainFormFormClosed(object sender, FormClosedEventArgs e)
-		{
-			InitialRoomDetial.FINISH_INITIAL_ROOM = true;
-			InitialGaiaRoom.FINISH_INITIAL_GAIA_ROOM = true;
-			if (initialServer != null) {
-				initialServer.Disposed();
-			}
-			if (runningMSGThread != null) {
-				runningMSGThread.Abort();
-			}
-		
-			
-	
-		}
-		bool Roll = true;
-		void RichTextBox1MouseEnter(object sender, EventArgs e)
-		{
-//			textBox1.Focus();
-//			richTextBox1.HideSelection=true;
-		}
-		void RichTextBox1MouseLeave(object sender, EventArgs e)
-		{
-			  
-		}
 		
 	}
 }
