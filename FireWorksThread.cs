@@ -56,14 +56,14 @@ namespace GaiaDanmu
 		public  void StartInitial()
 		{
 			//主线程在这里启动了三个线程，一个等待检测其他两个完成，两个用于初始化相关数据
-			if (initailSidThread == null || !initailSidThread.IsAlive)
-				initailSidThread = new Thread(new  ThreadStart(InitialRoom));
-			initailSidThread.Start();
+		
 			ShowMessage("初始化用户认证的数据。。。");
 			initialroom = new InitialRoomDetial();
 			initialGaiaroom = new InitialGaiaRoom(true);
 			initialGaiaroom.otherRoomID=RoomID;
-		
+			if (initailSidThread == null || !initailSidThread.IsAlive)
+				initailSidThread = new Thread(new  ThreadStart(InitialRoom));
+			initailSidThread.Start();
 		}
 		void InitialRoom()
 		{

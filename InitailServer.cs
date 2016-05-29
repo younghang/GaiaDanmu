@@ -306,7 +306,7 @@ namespace ZQDanmuTest
 						return;
 					}
 					Thread messageDealThread=new Thread(new ParameterizedThreadStart(GetChatResponse));
-					messageThread.Start(buffer);
+					messageDealThread.Start(buffer);
 //					GetChatResponse(buffer);
 				}
 				

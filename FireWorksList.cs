@@ -50,20 +50,21 @@ namespace GaiaDanmu
 		
 		}
  
-	 
+		int isInShow=0;
 		void ShowMessage(string str)
 		{
 			if (richTextBox1.InvokeRequired) {
 				// 当一个控件的InvokeRequired属性值为真时，说明有一个创建它以外的线程想访问它
 				Action<string> actionDelegate = (x) => { 
-	 
- 
- 
-					this.richTextBox1.Text += x + "\n"; 				 
+					isInShow++;
+					if (isInShow>1) {
+						return;
+					}
+					richTextBox1.Text += x + "\n"; 				 
 					richTextBox1.SelectionColor = Color.LimeGreen;
 					richTextBox1.SelectionBackColor = Color.White;
 					richTextBox1.HideSelection = false;
-                	
+					isInShow--;
                 
 				};
 				// 或者
