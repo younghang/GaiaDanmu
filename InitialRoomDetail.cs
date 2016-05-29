@@ -26,7 +26,7 @@ namespace ZQDanmuTest
 			thInitial.Start();
 		}
 		WorkLogin worklog;
-		public static bool FINISH_INITIAL_ROOM=false;
+		public   bool FINISH_INITIAL_ROOM=false;
 		void Initial()
 		{
  

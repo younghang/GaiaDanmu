@@ -32,11 +32,11 @@ namespace ZQDanmuTest
 			th2.Interval = 1000 * 20;
 			th2.Start();
 		}
-		public static bool MESSAGE = false;
+		public   bool MESSAGE = false;
 		public event ShowInWnd ShowMessage;
 		RoomDetail room;
 		Socket serverSocket;
-		public static int myPort = 15010;
+		public   int myPort = 15010;
 		//端口
 		public void ConnectServer(byte[] datas, bool beat = false)
 		{
@@ -53,7 +53,7 @@ namespace ZQDanmuTest
 					ShowMessage("连接服务器成功");
 
 				} catch (Exception e) {
-					ShowMessage(e.Message + "连接服务器失败，请退出！");
+					ShowMessage("error::"+e.Message + "连接服务器失败，请退出！");
 					return;
 					
 				}
@@ -68,7 +68,7 @@ namespace ZQDanmuTest
 				if (!beat)
 					ShowMessage("向服务器发送消息成功：" + sendMessage);
 			} catch (Exception e) {
-				ShowMessage("向服务器发送消息Failed!   请关闭软件后，尝试重新连接");
+				ShowMessage("error::向服务器发送消息Failed!   请关闭软件后，尝试重新连接");
 //				serverSocket.Shutdown(SocketShutdown.Both);
 //				serverSocket.Close();
 				
@@ -95,7 +95,7 @@ namespace ZQDanmuTest
 					return;
 				}
 			} catch {
-				ShowMessage("连接异常，可能登陆出现问题,请关闭后重试");
+				ShowMessage("error::连接异常，可能登陆出现问题,请关闭后重试");
 				return;
 			}
 			
@@ -131,7 +131,7 @@ namespace ZQDanmuTest
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				ShowMessage(e.Message + e.StackTrace);
+				ShowMessage("error::"+e.Message + e.StackTrace);
 			}
 			
 			
@@ -179,14 +179,14 @@ namespace ZQDanmuTest
 			//android 2.6.2 匿名
 			if (string.IsNullOrEmpty(loginstring))
 				loginstring = "{\"uid\":" + room.data.uid + ",\"os\":\"4.4.2\"," +
-				"\"sid\":\"" + room.data.sid + "\",\"model\":\"NX403A\",\"nickname\":\"\"," +
-				"\"imei\":\"zhanqi8633" + randon + "2153806\",\"cmdid\":\"loginreq\",\"ver\":\"2\"," +
-				"\"chatroomid\":" + room.chatRoomID + "," +
-				"\"timestamp\":" + room.data.timestamp + "," +
-				"\"roomid\":" + room.roomid + ",\"fhost\":\"android\",\"t\":0,\"r\":0,\"device\":1," +
-				"\"gid\":" + room.data.gid + "," +
-				"\"ssid\":\"" + room.GetSSID() + "\"," +
-				"\"roomdata\":{\"slevel\":[],\"vdesc\":\"\",\"vlevel\":0}}";
+					"\"sid\":\"" + room.data.sid + "\",\"model\":\"NX403A\",\"nickname\":\"\"," +
+					"\"imei\":\"zhanqi8633" + randon + "2153806\",\"cmdid\":\"loginreq\",\"ver\":\"2\"," +
+					"\"chatroomid\":" + room.chatRoomID + "," +
+					"\"timestamp\":" + room.data.timestamp + "," +
+					"\"roomid\":" + room.roomid + ",\"fhost\":\"android\",\"t\":0,\"r\":0,\"device\":1," +
+					"\"gid\":" + room.data.gid + "," +
+					"\"ssid\":\"" + room.GetSSID() + "\"," +
+					"\"roomdata\":{\"slevel\":[],\"vdesc\":\"\",\"vlevel\":0}}";
 			
 //			string loginstring =	"{\"nickname\":\"\"," +
 //				"\"fhost\":\"android\","+
@@ -279,7 +279,7 @@ namespace ZQDanmuTest
 			
 			
 		}
-		public static bool RUN_CONNECTION = true;
+		public   bool RUN_CONNECTION = true;
 		void TimerToConnect(object sender, ElapsedEventArgs e)
 		{
 			if (!RUN_CONNECTION) {
@@ -305,7 +305,9 @@ namespace ZQDanmuTest
 						ShowMessage("没有收到消息");
 						return;
 					}
-					GetChatResponse(buffer);
+					Thread messageDealThread=new Thread(new ParameterizedThreadStart(GetChatResponse));
+					messageThread.Start(buffer);
+//					GetChatResponse(buffer);
 				}
 				
 				
@@ -318,9 +320,9 @@ namespace ZQDanmuTest
 			
 			
 		}
-		void GetChatResponse(byte[]buffer)
+		void GetChatResponse(object messagebyte )
 		{
-			
+			byte[]buffer=messagebyte as byte[];
 
 			try {
 				
@@ -402,17 +404,21 @@ namespace ZQDanmuTest
 						ShowInfo = nickname + " :" + strlevel + " \t#####：:送的" + name + ":X" + count + "               ";
 						break;
 					case "Level.FwList":
-				 
+						
+						ShowInfo = "";
+						break;
+					case "Gift.AprilSpecial":
+						
 						ShowInfo = "";
 						break;
 					case "timegiftupdate":
-				 
+						
 						ShowInfo = "";
 						break;
-					case "Level.Fans":				 
+					case "Level.Fans":
 						ShowInfo = "";
 						break;
-					case "useronline":		  
+					case "useronline":
 						ShowInfo = "";
 						break;
 					case "timegiftbro":
@@ -422,7 +428,7 @@ namespace ZQDanmuTest
 						string unit = (string)jsonObject.GetValue("unit");
 						ShowInfo = name + "送给大哥" + count + unit + gname;
 						break;
-					 
+						
 					case "Car.Show":
 						ShowInfo = "";
 						break;
@@ -478,15 +484,15 @@ namespace ZQDanmuTest
 				
 				return;
 				
-				 
+				
 				
 
 			} catch (OutOfMemoryException) {
-				ShowMessage("消息格式出错");
+				ShowMessage("error::消息格式出错");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 //				ShowMessage(e.Message );
-				ShowMessage("接收消息出错");
+				ShowMessage("error::接收消息出错");
 			}
 			
 			
@@ -556,7 +562,7 @@ namespace ZQDanmuTest
 				messageThread.Interrupt();
 				serverSocket.Close();
 			} catch (Exception e) {
-				ShowMessage(e.Message);
+				ShowMessage("error::"+e.Message);
 			}
 			
 		}

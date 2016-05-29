@@ -20,6 +20,7 @@ namespace ZQDanmuTest
 		private System.Windows.Forms.Button btn_SendMessage;
 		private System.Windows.Forms.CheckBox IPCheck;
 		private System.Windows.Forms.CheckBox fireCheck;
+		private System.Windows.Forms.Label lbl_NewMsg;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -48,6 +49,7 @@ namespace ZQDanmuTest
 			this.btn_SendMessage = new System.Windows.Forms.Button();
 			this.IPCheck = new System.Windows.Forms.CheckBox();
 			this.fireCheck = new System.Windows.Forms.CheckBox();
+			this.lbl_NewMsg = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// richTextBox1
@@ -61,8 +63,8 @@ namespace ZQDanmuTest
 			this.richTextBox1.TabIndex = 0;
 			this.richTextBox1.Text = "";
 			this.richTextBox1.TextChanged += new System.EventHandler(this.RichTextBox1TextChanged);
-			this.richTextBox1.MouseEnter += new System.EventHandler(this.RichTextBox1MouseEnter);
-			this.richTextBox1.MouseLeave += new System.EventHandler(this.RichTextBox1MouseLeave);
+			this.richTextBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RichTextBox1MouseDown);
+			this.richTextBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RichTextBox1MouseUp);
 			// 
 			// btn_Send
 			// 
@@ -109,11 +111,21 @@ namespace ZQDanmuTest
 			this.fireCheck.Text = "烟花测试";
 			this.fireCheck.UseVisualStyleBackColor = true;
 			// 
+			// lbl_NewMsg
+			// 
+			this.lbl_NewMsg.Location = new System.Drawing.Point(461, 1);
+			this.lbl_NewMsg.Name = "lbl_NewMsg";
+			this.lbl_NewMsg.Size = new System.Drawing.Size(124, 30);
+			this.lbl_NewMsg.TabIndex = 4;
+			this.lbl_NewMsg.Text = "label1";
+			this.lbl_NewMsg.Visible = false;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(597, 510);
+			this.Controls.Add(this.lbl_NewMsg);
 			this.Controls.Add(this.fireCheck);
 			this.Controls.Add(this.IPCheck);
 			this.Controls.Add(this.textBox1);

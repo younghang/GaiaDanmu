@@ -67,11 +67,11 @@ namespace GaiaDanmu
 		}
 		void InitialRoom()
 		{
-			while (!InitialRoomDetial.FINISH_INITIAL_ROOM || !InitialGaiaRoom.FINISH_INITIAL_GAIA_ROOM) {
+			while (!initialroom.FINISH_INITIAL_ROOM || !initialGaiaroom.FINISH_INITIAL_GAIA_ROOM) {
 				
 			}
-			InitialGaiaRoom.FINISH_INITIAL_GAIA_ROOM = false;
-			InitialRoomDetial.FINISH_INITIAL_ROOM = false;
+			initialGaiaroom.FINISH_INITIAL_GAIA_ROOM = false;
+			initialroom.FINISH_INITIAL_ROOM = false;
 			ShowMessage("初始化相关信息完成");
 			//显示一下
 			RoomDetail room = initialroom.GetRoomDetail();

@@ -54,6 +54,11 @@ namespace ZQDanmuTest
 		InitialGaiaRoom initialGaiaroom;
 		Thread initailSidThread;
 		Thread runningMSGThread;
+		Thread checkUpdateThread;
+		int MessgeCount=0;
+		bool StopMessge;
+		static int DanmuVersion=12;
+		List<string> listMsg=new List<string>();
 		void StartRunning()
 		{
 			ShowMessage("开始连接弹幕服务器。。。");
@@ -64,22 +69,38 @@ namespace ZQDanmuTest
 		}
 		void StartInitial()
 		{
+			if (checkUpdateThread==null||!checkUpdateThread.IsAlive) {
+				checkUpdateThread=new Thread(new ThreadStart(()=>{
+				                                             	try{
+				                                             		int NewVersion= int.Parse(new WorkLogin().GetUpdate());
+				                                             		if (NewVersion>DanmuVersion) {
+				                                             			MessageBox.Show("有新版本，请去贴吧下载，扬co发的女王那个贴子");
+				                                             			ShowMessage("有新版本，请去贴吧下载，扬co发的女王那个贴子");
+				                                             		}
+				                                             		else
+				                                             			ShowMessage("没有更新");
+				                                             	}
+				                                             	catch{ShowMessage("检查更新失败");}
+				                                             }));
+			}
+			checkUpdateThread.Start();
 			//主线程在这里启动了三个线程，一个等待检测其他两个完成，两个用于初始化相关数据
-			if (initailSidThread == null || !initailSidThread.IsAlive)
-				initailSidThread = new Thread(new  ThreadStart(InitialRoom));
-			initailSidThread.Start();
+			
 			ShowMessage("初始化用户认证的数据。。。");
 			initialroom = new InitialRoomDetial();
 			initialGaiaroom = new InitialGaiaRoom();
+			if (initailSidThread == null || !initailSidThread.IsAlive)
+				initailSidThread = new Thread(new  ThreadStart(InitialRoom));
+			initailSidThread.Start();
 			
 		}
 		void InitialRoom()
 		{
-			while (!InitialRoomDetial.FINISH_INITIAL_ROOM || !InitialGaiaRoom.FINISH_INITIAL_GAIA_ROOM) {
+			while (!initialroom.FINISH_INITIAL_ROOM || !initialGaiaroom.FINISH_INITIAL_GAIA_ROOM) {
 				
 			}
-			InitialGaiaRoom.FINISH_INITIAL_GAIA_ROOM = false;
-			InitialRoomDetial.FINISH_INITIAL_ROOM = false;
+			initialGaiaroom.FINISH_INITIAL_GAIA_ROOM = false;
+			initialroom.FINISH_INITIAL_ROOM = false;
 			ShowMessage("初始化相关信息完成");
 			//显示一下
 			RoomDetail room = initialroom.GetRoomDetail();
@@ -147,52 +168,92 @@ namespace ZQDanmuTest
 //			}
 		}
 		FireWorksList fl = null;
+		void AppendNewMessageToList(string x)
+		{
+			int pos = x.IndexOf(':');
+			int pos2 = x.IndexOf("::");
+			int len = richTextBox1.Text.Length;
+			if (!IPCheck.Checked && x.Contains(".")) {
+				x = x.Substring(0, x.Length - 15);
+			}
+			if (x.Contains("www.zhanqi.tv")) {
+				string rooid=x.Split('$')[1];
+				x=x.Split('$')[0];
+				
+				if(fireCheck.Checked){
+					if (fl==null) {
+						fl=new FireWorksList();
+						fl.Show();
+					}
+					fl.AddRoomid(rooid);
+				}
+			}
+			
+			this.richTextBox1.AppendText(x + "\n");
+			if (x.Contains("::")) {
+				richTextBox1.Select(len, pos);
+				richTextBox1.SelectionColor = Color.LimeGreen;
+				richTextBox1.Select(len+pos,  pos2-pos);
+				richTextBox1.SelectionColor = Color.Blue;
+				richTextBox1.Select(len+pos2,  x.Length-pos2);
+				richTextBox1.SelectionColor = Color.Red;
+			}else
+				if (x.Contains("error::")) {
+				richTextBox1.Select(len,  x.Length);
+				richTextBox1.SelectionColor = Color.Red;
+			}else
+
+				if (x.Contains("###")) {
+				richTextBox1.Select(len,  x.Length);
+				richTextBox1.SelectionColor = Color.Fuchsia;
+			}else
+				if (x.Contains("进入直播间")) {
+				richTextBox1.Select(len,  x.Length);
+				richTextBox1.SelectionColor = Color.DarkOrange;
+			}
+			richTextBox1.SelectionColor = Color.Black;
+			
+			richTextBox1.SelectionBackColor = Color.White;
+			richTextBox1.HideSelection = false;
+			
+			
+			
+		}
 		void ShowMessage(string str)
 		{
-			try {
-				if (richTextBox1.InvokeRequired) {
-					// 当一个控件的InvokeRequired属性值为真时，说明有一个创建它以外的线程想访问它
-					Action<string> actionDelegate = (x) => {
-						int pos = x.IndexOf(':');
-						int pos2 = x.IndexOf("::");
-						int len = richTextBox1.Text.Length;
-						if (!IPCheck.Checked && x.Contains(".")) {
-							x = x.Substring(0, x.Length - 15);
-						}
-						if (x.Contains("www.zhanqi.tv")) {
-							string rooid=x.Split('$')[1];
-							x=x.Split('$')[0];
-							
-							if(fireCheck.Checked){
-								if (fl==null) {
-									fl=new FireWorksList();
-									fl.Show();
-								}
-								fl.AddRoomid(rooid);
-							}
-						}
-					 
-						this.richTextBox1.AppendText(x + "\n");
-						richTextBox1.Select(len, pos);
-						richTextBox1.SelectionColor = Color.LimeGreen;
-						richTextBox1.Select(len+pos,  pos2-pos);
-						richTextBox1.SelectionColor = Color.Blue;
-						richTextBox1.Select(len+pos2,  x.Length-pos2);
-//						richTextBox1.SelectionColor = Color.Fuchsia;
-						richTextBox1.SelectionColor = Color.Red;
-						richTextBox1.SelectionBackColor = Color.White;
-						richTextBox1.HideSelection = false;
-						
-						
-					};
-					// 或者
-					// Action<string> actionDelegate = delegate(string txt) { this.label2.Text = txt; };
-					this.richTextBox1.Invoke(actionDelegate, str);
-				} else {
-					this.richTextBox1.AppendText( str + "\n");
+			if (StopMessge) {
+				MessgeCount++;
+				listMsg.Add(str);
+				try{
+					if (lbl_NewMsg.InvokeRequired) {
+						// 当一个控件的InvokeRequired属性值为真时，说明有一个创建它以外的线程想访问它
+						Action<string> actionDelegate =(x)=>{lbl_NewMsg.Text="新消息"+MessgeCount;};
+						// 或者
+						// Action<string> actionDelegate = delegate(string txt) { this.label2.Text = txt; };
+						this.lbl_NewMsg.Invoke(actionDelegate, str);
+					} else {
+						this.lbl_NewMsg.Text= str;
+					}
+				} catch {
+					ShowMessage("error::显示新信息条数出错");
 				}
-			} catch {
-				ShowMessage("显示信息出错");
+			}
+			
+			
+			else{
+				try {
+					if (richTextBox1.InvokeRequired) {
+						// 当一个控件的InvokeRequired属性值为真时，说明有一个创建它以外的线程想访问它
+						Action<string> actionDelegate =AppendNewMessageToList;
+						// 或者
+						// Action<string> actionDelegate = delegate(string txt) { this.label2.Text = txt; };
+						this.richTextBox1.Invoke(actionDelegate, str);
+					} else {
+						this.richTextBox1.AppendText( str + "\n");
+					}
+				} catch {
+					ShowMessage("error::显示信息出错");
+				}
 			}
 
 			
@@ -200,10 +261,10 @@ namespace ZQDanmuTest
 		void Btn_SendClick(object sender, EventArgs e)
 		{
 //			richTextBox1.Text+= GetTimeStamp()+"\n";
-			InitailServer.RUN_CONNECTION = !InitailServer.RUN_CONNECTION;
+			initialServer.RUN_CONNECTION = !initialServer.RUN_CONNECTION;
 			
 			string info = "";
-			if (InitailServer.RUN_CONNECTION) {
+			if (initialServer.RUN_CONNECTION) {
 				info = "启动接收";
 				btn_Send.Text = "停止";
 				StartInitial();
@@ -215,24 +276,8 @@ namespace ZQDanmuTest
 			ShowMessage(info);
 			RUNNING = !RUNNING;
 		}
-		/// 获取当前时间戳
-		/// </summary>
-		/// <param name="bflag">为真时获取10位时间戳,为假时获取13位时间戳.</param>
-		/// <returns></returns>
-		public static string GetTimeStamp(bool bflag = true)
-		{
-			TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-			string ret = string.Empty;
-			if (bflag)
-				ret = Convert.ToInt64(ts.TotalSeconds).ToString();
-			else
-				ret = Convert.ToInt64(ts.TotalMilliseconds).ToString();
-			
-			return ret;
-		}
-		
-		
-		
+
+
 		void Btn_SendMessageClick(object sender, EventArgs e)
 		{
 			
@@ -244,10 +289,10 @@ namespace ZQDanmuTest
 				ShowMessage("InitialServer 对象没有了");
 				return;
 			}
-			InitailServer.MESSAGE = true;
+			initialServer.MESSAGE = true;
 			strMessage = textBox1.Text;
 			initialServer.ConnectServerStep5(strMessage);
-			InitailServer.MESSAGE = false;
+			initialServer.MESSAGE = false;
 		}
 		void RichTextBox1TextChanged(object sender, EventArgs e)
 		{
@@ -263,8 +308,8 @@ namespace ZQDanmuTest
 		}
 		void MainFormFormClosed(object sender, FormClosedEventArgs e)
 		{
-			InitialRoomDetial.FINISH_INITIAL_ROOM = true;
-			InitialGaiaRoom.FINISH_INITIAL_GAIA_ROOM = true;
+			initialroom.FINISH_INITIAL_ROOM = true;
+			initialGaiaroom.FINISH_INITIAL_GAIA_ROOM = true;
 			if (initialServer != null) {
 				initialServer.Disposed();
 			}
@@ -273,24 +318,56 @@ namespace ZQDanmuTest
 			}
 			
 		}
-		
-		void RichTextBox1MouseEnter(object sender, EventArgs e)
+
+
+		void RichTextBox1MouseDown(object sender, MouseEventArgs e)
 		{
-//			textBox1.Focus();
-//			richTextBox1.HideSelection=true;
-		}
-		void RichTextBox1MouseLeave(object sender, EventArgs e)
-		{
+			StopMessge=true;
+			lbl_NewMsg.Visible=true;
 			
 		}
-		
-		
-		
-		
-		
-		
+		void RichTextBox1MouseUp(object sender, MouseEventArgs e)
+		{
+			StopMessge=false;
+			foreach (var element in listMsg) {
+				AppendNewMessageToList(element);
+			}
+			lbl_NewMsg.Visible=false;
+			MessgeCount=0;
+			listMsg.Clear();
+			lbl_NewMsg.Text="咩有新消息";
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+		/// 获取当前时间戳
+		/// </summary>
+		/// <param name="bflag">为真时获取10位时间戳,为假时获取13位时间戳.</param>
+		/// <returns></returns>
+		public static string GetTimeStamp(bool bflag = true)
+		{
+			TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+			string ret = string.Empty;
+			if (bflag)
+				ret = Convert.ToInt64(ts.TotalSeconds).ToString();
+			else
+				ret = Convert.ToInt64(ts.TotalMilliseconds).ToString();
+			
+			return ret;
+		}
+
+
 		#region MD5测试
-		
+
 		public  string   GetMD5(string   myString)
 		{
 			MD5 md5 = new   MD5CryptoServiceProvider();
@@ -329,7 +406,7 @@ namespace ZQDanmuTest
 			string c = Convert.ToBase64String(bytes);
 			richTextBox1.Text = c;
 		}
-		
+
 		private static string[] HexCode = {
 			"0",
 			"1",
@@ -348,8 +425,8 @@ namespace ZQDanmuTest
 			"e",
 			"f"
 		};
-		
-		
+
+
 		public static string byteToHexString(byte b)
 		{
 			int n = b;
@@ -360,7 +437,7 @@ namespace ZQDanmuTest
 			int d2 = n % 16;
 			return HexCode[d1] + HexCode[d2];
 		}
-		
+
 		public static String byteArrayToHexString(byte[] b)
 		{
 			String result = "";
@@ -369,8 +446,8 @@ namespace ZQDanmuTest
 			}
 			return result;
 		}
-		
+
 		#endregion
-		
+
 	}
 }

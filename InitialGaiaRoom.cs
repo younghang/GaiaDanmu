@@ -28,7 +28,7 @@ namespace ZQDanmuTest
 		bool other_Room=false;
 		WorkLogin worklog;
 		public string otherRoomID="";
-		public static bool FINISH_INITIAL_GAIA_ROOM=false;
+		public  bool FINISH_INITIAL_GAIA_ROOM=false;
 		void Initial()
 		{
 			if (other_Room) {

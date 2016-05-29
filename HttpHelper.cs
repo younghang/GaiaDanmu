@@ -40,6 +40,7 @@ namespace ZQDanmuTest
 			request.Method = "GET";
 			
 			
+			if (userAgent!=null) 
 			//设置代理UserAgent和超时
 			request.UserAgent = userAgent;
 			//request.Timeout = timeout;

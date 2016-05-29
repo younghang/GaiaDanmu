@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -39,6 +40,7 @@ namespace ZQDanmuTest
 		string gaia_enter = "http://www.zhanqi.tv/api/user/record.watch?type=1&id=52320";
 		string sign_all = "http://www.zhanqi.tv/api/actives/signin/fans.sign?";
 		string follow_list = "http://www.zhanqi.tv/api/user/follow.listall";
+		string update="https://github.com/younghang/GaiaDanmu/blob/master/danmuupdate.txt";
 		
 		string get_room_view_anymouse = "http://www.zhanqi.tv/api/public/room.viewer?sid=&ver=2.6.8&os=3";
 		string get_room_view_login = "http://www.zhanqi.tv/api/public/room.viewer?ver=2.6.8&os=3&sid=";
@@ -260,6 +262,23 @@ namespace ZQDanmuTest
 			return null;
 			
 			
+		}
+				/// <summary>
+		/// 检测更新 gaiadanmuversion=12#
+		/// </summary>
+		/// <param name="url">Get的URL</param>
+		/// <param name="needlogin">是否需要登陆 才能访问，默认需要true</param>
+		/// <returns>返回JObject对象 出错返回null</returns>
+		public string GetUpdate()
+		{
+			HttpWebResponse response = HttpHelper.CreateGetHttpResponse(update, timeout, null, null);	
+		 
+			string recievedata = HttpHelper.GetResponseString(response);
+			string versionReg="gaiadanmuversion=[0-9]+#";
+			string version=Regex.Match(recievedata, versionReg).Groups[0].Value;
+			version=version.Split('=')[1];
+			version=version.Substring(0,version.Length-1);
+			return version;	 
 		}
 	}
 }
