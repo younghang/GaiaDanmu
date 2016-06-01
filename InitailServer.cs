@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -64,10 +65,12 @@ namespace ZQDanmuTest
 			try {
 				
 				string sendMessage = "" + DateTime.Now;
+				
 				serverSocket.Send(datas);
 				if (!beat)
 					ShowMessage("向服务器发送消息成功：" + sendMessage);
 			} catch (Exception e) {
+				Thread.Sleep(1000*5);
 				ShowMessage("error::向服务器发送消息Failed!   请关闭软件后，尝试重新连接");
 //				serverSocket.Shutdown(SocketShutdown.Both);
 //				serverSocket.Close();
@@ -103,7 +106,7 @@ namespace ZQDanmuTest
 				ShowMessage("socket没了");
 				return;
 			}
-			int receiveLength = serverSocket.Receive(buffer);
+			int receiveLength = serverSocket.Receive(buffer, 0, 1024 * 2, SocketFlags.None);
 			if (receiveLength == 0) {
 				ShowMessage("没有收到消息");
 				return;
@@ -305,6 +308,7 @@ namespace ZQDanmuTest
 						ShowMessage("没有收到消息");
 						return;
 					}
+					
 					Thread messageDealThread=new Thread(new ParameterizedThreadStart(GetChatResponse));
 					messageDealThread.Start(buffer);
 //					GetChatResponse(buffer);
@@ -323,7 +327,9 @@ namespace ZQDanmuTest
 		void GetChatResponse(object messagebyte )
 		{
 			byte[]buffer=messagebyte as byte[];
-
+			String strJson;
+			int size;
+			JObject jsonObject;
 			try {
 				
 				
@@ -332,15 +338,15 @@ namespace ZQDanmuTest
 					bs[i] = buffer[6 + i];
 				}
 				
-				int size = System.BitConverter.ToInt32(bs, 0);
+				size = (int)System.BitConverter.ToInt16(bs, 0);
 //				ShowMessage("DataSize:" + size + "字节");
 				byte[] data = new byte[size];
 				for (int i = 0; i < data.Length; i++) {
 					data[i] = buffer[i + 12];
 				}
-				String strJson = System.Text.Encoding.UTF8.GetString(data);
+				  strJson = System.Text.Encoding.UTF8.GetString(data);
 
-				JObject jsonObject = JObject.Parse(strJson);
+				  jsonObject = JObject.Parse(strJson);
 				
 				string ShowInfo = "";
 				string cmdid = (string)jsonObject.GetValue("cmdid");
@@ -488,11 +494,30 @@ namespace ZQDanmuTest
 				
 
 			} catch (OutOfMemoryException) {
+				try{
+				File.WriteAllBytes("./outofmemory.txt",buffer);
+				}catch
+				{}
 				ShowMessage("error::消息格式出错");
-			} catch (Exception e) {
+			}
+			catch(IndexOutOfRangeException e)
+			{
+				try{
+					File.WriteAllBytes("./shuzuyuejue.txt",buffer);
+				}catch
+				{}
+			
+				ShowMessage("error::数组越界");
+			}
+			catch (Exception e) {
+				try{
+			File.WriteAllBytes("./othererror.txt",buffer);
+				}catch
+				{}
 				// TODO Auto-generated catch block
+				
 //				ShowMessage(e.Message );
-				ShowMessage("error::接收消息出错");
+				ShowMessage("error::接收消息出错"+e.Message);
 			}
 			
 			

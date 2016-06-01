@@ -21,6 +21,7 @@ namespace ZQDanmuTest
 		private System.Windows.Forms.CheckBox IPCheck;
 		private System.Windows.Forms.CheckBox fireCheck;
 		private System.Windows.Forms.Label lbl_NewMsg;
+		private System.Windows.Forms.Button btn_DanmuSave;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -50,6 +51,7 @@ namespace ZQDanmuTest
 			this.IPCheck = new System.Windows.Forms.CheckBox();
 			this.fireCheck = new System.Windows.Forms.CheckBox();
 			this.lbl_NewMsg = new System.Windows.Forms.Label();
+			this.btn_DanmuSave = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// richTextBox1
@@ -68,7 +70,7 @@ namespace ZQDanmuTest
 			// 
 			// btn_Send
 			// 
-			this.btn_Send.Location = new System.Drawing.Point(350, 485);
+			this.btn_Send.Location = new System.Drawing.Point(347, 485);
 			this.btn_Send.Name = "btn_Send";
 			this.btn_Send.Size = new System.Drawing.Size(72, 25);
 			this.btn_Send.TabIndex = 1;
@@ -95,7 +97,7 @@ namespace ZQDanmuTest
 			// 
 			// IPCheck
 			// 
-			this.IPCheck.Location = new System.Drawing.Point(443, 489);
+			this.IPCheck.Location = new System.Drawing.Point(512, 487);
 			this.IPCheck.Name = "IPCheck";
 			this.IPCheck.Size = new System.Drawing.Size(39, 19);
 			this.IPCheck.TabIndex = 3;
@@ -104,7 +106,7 @@ namespace ZQDanmuTest
 			// 
 			// fireCheck
 			// 
-			this.fireCheck.Location = new System.Drawing.Point(488, 489);
+			this.fireCheck.Location = new System.Drawing.Point(512, 468);
 			this.fireCheck.Name = "fireCheck";
 			this.fireCheck.Size = new System.Drawing.Size(78, 19);
 			this.fireCheck.TabIndex = 3;
@@ -113,12 +115,22 @@ namespace ZQDanmuTest
 			// 
 			// lbl_NewMsg
 			// 
-			this.lbl_NewMsg.Location = new System.Drawing.Point(461, 1);
+			this.lbl_NewMsg.Location = new System.Drawing.Point(279, 1);
 			this.lbl_NewMsg.Name = "lbl_NewMsg";
 			this.lbl_NewMsg.Size = new System.Drawing.Size(124, 30);
 			this.lbl_NewMsg.TabIndex = 4;
 			this.lbl_NewMsg.Text = "label1";
 			this.lbl_NewMsg.Visible = false;
+			// 
+			// btn_DanmuSave
+			// 
+			this.btn_DanmuSave.Location = new System.Drawing.Point(434, 485);
+			this.btn_DanmuSave.Name = "btn_DanmuSave";
+			this.btn_DanmuSave.Size = new System.Drawing.Size(72, 25);
+			this.btn_DanmuSave.TabIndex = 1;
+			this.btn_DanmuSave.Text = "保存弹幕";
+			this.btn_DanmuSave.UseVisualStyleBackColor = true;
+			this.btn_DanmuSave.Click += new System.EventHandler(this.btn_SaveDanmu);
 			// 
 			// MainForm
 			// 
@@ -130,6 +142,7 @@ namespace ZQDanmuTest
 			this.Controls.Add(this.IPCheck);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.btn_SendMessage);
+			this.Controls.Add(this.btn_DanmuSave);
 			this.Controls.Add(this.btn_Send);
 			this.Controls.Add(this.richTextBox1);
 			this.Name = "MainForm";

@@ -49,8 +49,9 @@ namespace GaiaDanmu
 			
 		
 		}
- 
-		int isInShow=0;
+
+int isInShow=0;
+//		List<String> otherMessageList=new List<string>();
 		void ShowMessage(string str)
 		{
 			if (richTextBox1.InvokeRequired) {
@@ -58,9 +59,12 @@ namespace GaiaDanmu
 				Action<string> actionDelegate = (x) => { 
 					isInShow++;
 					if (isInShow>1) {
-						return;
+						Random ran=new Random();
+						int timeLong=ran.Next(50,400);
+						Thread.Sleep(20+timeLong);
+//						return;
 					}
-					richTextBox1.Text += x + "\n"; 				 
+					richTextBox1.AppendText( x + "\n");
 					richTextBox1.SelectionColor = Color.LimeGreen;
 					richTextBox1.SelectionBackColor = Color.White;
 					richTextBox1.HideSelection = false;
