@@ -43,7 +43,7 @@ namespace GaiaDanmu
 			fireWorks=new FireWorksThread(stid);
 			ShowMessage("添加一个"+id);
 			fireWorks.StartInitial();
-			Thread.Sleep(1000*60*6);
+			Thread.Sleep(1000*60*7);
 			ShowMessage("完成一个"+id);
 			fireWorks.Close();
 			

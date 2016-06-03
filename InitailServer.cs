@@ -179,18 +179,29 @@ namespace ZQDanmuTest
 //			                     + "\"uid\":\"" + room.data.uid + "\",\"opp\":0,\"curexp\":\"2958\",\"levelexp\":\"0\",\"type\":\"0\",\"consume\":\"2958\",\"pos\":\"0\",\"level\":\"0\","
 //			                     + "\"etime\":\"1448896181\",\"name\":\"\",\"nextexp\":\"15000\",\"leftexp\":\"12042\",\"nextname\":\"青铜5\",\"keep\":\"\"},\"vdesc\":\"\",\"vlevel\":0}}";
 
-			//android 2.6.2 匿名
-			if (string.IsNullOrEmpty(loginstring))
+			//android 2.6.2 匿名 没法用了
+			if (string.IsNullOrEmpty(loginstring)){
 				loginstring = "{\"uid\":" + room.data.uid + ",\"os\":\"4.4.2\"," +
-					"\"sid\":\"" + room.data.sid + "\",\"model\":\"NX403A\",\"nickname\":\"\"," +
-					"\"imei\":\"zhanqi8633" + randon + "2153806\",\"cmdid\":\"loginreq\",\"ver\":\"2\"," +
+					"\"sid\":\"" + room.data.sid + "\",\"model\":\"NX803A\",\"nickname\":\"\"," +
+					"\"imei\":\"zhanqi8633" + randon + "2153806\",\"cmdid\":\"loginreq\"," +
+					"\"ver\":\"11\"," +//“2” 是2.6.2 ；“11” 是2.6.8
 					"\"chatroomid\":" + room.chatRoomID + "," +
 					"\"timestamp\":" + room.data.timestamp + "," +
 					"\"roomid\":" + room.roomid + ",\"fhost\":\"android\",\"t\":0,\"r\":0,\"device\":1," +
 					"\"gid\":" + room.data.gid + "," +
 					"\"ssid\":\"" + room.GetSSID() + "\"," +
 					"\"roomdata\":{\"slevel\":[],\"vdesc\":\"\",\"vlevel\":0}}";
-			
+			//这个是电脑的格式 ，主要是ssid的加密字符串不知道是什么，这个问题不解决就没办法用，除非自己抓包找到ssid
+//			loginstring="{\"fx\":0,\"ver\":12," +
+//				"\"roomid\":"+room.roomid+",\"nickname\":\"\",\"tagid\":0," +
+//				"\"uid\":"+room.data.uid+",\"cmdid\":\"loginreq\",\"thirdaccount\":\"\"," +
+//				"\"gid\":"+room.data.gid+",\"hideslv\":0,\"fhost\":\"\"," +
+//				"\"sid\":\""+room.data.sid+"\"," +
+//				"\"timestamp\":"+room.data.timestamp+",\"t\":0," +
+//				"\"ssid\":\""+room.GetSSID()+"\",\"roomdata\":{\"vdesc\":\"\",\"slevel\":{\"curexp\":\"1036\",\"nextexp\":\"15000\",\"opp\":0,\"levelexp\":\"0\",\"pos\":\"0\",\"leftexp\":\"13964\",\"nextname\":\"5\",\"keep\":\"\"," +
+//				"\"uid\":\""+room.data.uid+"\",\"level\":\"0\",\"name\":\"\"}," +
+//				"\"vlevel\":0},\"imei\":\""+randon+"94"+"\"}";
+			}
 //			string loginstring =	"{\"nickname\":\"\"," +
 //				"\"fhost\":\"android\","+
 //			                     "\"gid\":" + room.data.gid + ",\"cmdid\":\"loginreq\"," +
@@ -220,7 +231,16 @@ namespace ZQDanmuTest
 			jsonObject.Add("swrate", 0);
 			jsonObject.Add("swline", 4);
 			SendJsonToServer(jsonObject, (byte)0x10, (byte)0x27);
-			
+			Thread.Sleep(1000);
+//			{"type":"quan","cmdid":"timegiftinfo"}
+//			byte[] datas=new byte[]{0xbb,0xcc,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x59,0x27,0xbb,0xcc,0x00,0x00,0x00,0x00,0x25,0x00,0x00,0x00,0x10,0x27,0x7b,0x22,0x73,0x77,0x6c,0x69,0x6e,0x65,0x22,0x3a,0x34,0x2c,0x22,0x73,0x77,0x72,0x61,0x74,0x65,0x22,0x3a,0x30,0x2c,0x22,0x63,0x6d,0x64,0x69,0x64,0x22,0x3a,0x22,0x63,0x64,0x6e,0x22,0x7d,0xbb,0xcc,0x00,0x00,0x00,0x00,0x33,0x00,0x00,0x00,0x12,0x27,0x7b,0x22,0x76,0x6f,0x64,0x22,0x3a,0x30,0x2c,0x22,0x63,0x6d,0x64,0x69,0x64,0x22,0x3a,0x22,0x77,0x61,0x74,0x63,0x68,0x62,0x61,0x63,0x6b,0x68,0x6f,0x74,0x72,0x65,0x71,0x22,0x2c,0x22,0x76,0x69,0x64,0x65,0x6f,0x69,0x64,0x22,0x3a,0x35,0x32,0x33,0x32,0x30,0x7d};
+//			ConnectServer(datas);
+//			Thread.Sleep(1000);
+//			JObject jsonObject2 = new JObject();
+//			jsonObject2.Add("cmdid", "timegiftinfo");
+//			jsonObject2.Add("type", "quan");
+	 
+//			SendJsonToServer(jsonObject2, (byte)0x10, (byte)0x27);
 			
 		}
 		
@@ -498,7 +518,7 @@ namespace ZQDanmuTest
 				File.WriteAllBytes("./outofmemory.txt",buffer);
 				}catch
 				{}
-				ShowMessage("error::消息格式出错");
+				ShowMessage("error::这条消息接收失败（粘包）");
 			}
 			catch(IndexOutOfRangeException e)
 			{
@@ -507,7 +527,7 @@ namespace ZQDanmuTest
 				}catch
 				{}
 			
-				ShowMessage("error::数组越界");
+				ShowMessage("error::这条消息接收失败（大小越界）");
 			}
 			catch (Exception e) {
 				try{
@@ -517,7 +537,7 @@ namespace ZQDanmuTest
 				// TODO Auto-generated catch block
 				
 //				ShowMessage(e.Message );
-				ShowMessage("error::接收消息出错"+e.Message);
+				ShowMessage("error::这条消息接收失败（其他原因）");
 			}
 			
 			

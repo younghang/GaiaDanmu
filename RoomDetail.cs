@@ -81,8 +81,8 @@ namespace ZQDanmuTest
 		public string GetSSID()
 		{
 			 
-			 string beforestr=data.uid+""+data.gid+">y,V4{{][$@s]qS3"+data.timestamp;	//2.6.2		 
-//			string beforestr=data.uid+data.gid+"www.zhanqi.tv%H``68](U#s91n.k"+data.timestamp;//2.6.8
+//			 string beforestr=data.uid+""+data.gid+">y,V4{{][$@s]qS3"+data.timestamp;	//2.6.2		 
+			string beforestr=data.uid+""+data.gid+"www.zhanqi.tv%H``68](U#s91n.k"+data.timestamp;//2.6.8
 //			string beforestr=data.uid+""+data.gid+"qwer"+data.timestamp;//2.5.5
 			MD5 md = new MD5CryptoServiceProvider();
 //

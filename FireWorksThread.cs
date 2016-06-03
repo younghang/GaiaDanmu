@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using ZQDanmuTest;
@@ -22,6 +23,7 @@ namespace GaiaDanmu
 		{
 				RoomID=roomid;
 				 
+				 
 		}
 		string RoomID="";
 		InitialRoomDetial initialroom;
@@ -31,14 +33,21 @@ namespace GaiaDanmu
 
 		void SendMessage(object sender, System.Timers.ElapsedEventArgs e)
 		{
-			 if (fireMsgCount>14) {
+			 if (fireMsgCount>23) {
 				timer.Stop();
 				fireMsgCount=0;
 				
 			 }
 //			initialServer.ConnectServerStep5("我爱大哥我爱大哥我爱大哥我爱大哥我爱大哥我爱大哥");
-			initialServer.ConnectServerStep5("0.0");
+			if (Msgcount>2) {
+				Msgcount=0;
+			}
+			
+			initialServer.ConnectServerStep5(msg[Msgcount]);
+			Msgcount++;
 		}
+		static List<string> msg=new List<string>{"我爱大哥，民那都喜欢大哥","0.0","大哥最棒了"};
+		static int Msgcount=0;
 
 		void StartRunning()
 		{	
@@ -48,7 +57,7 @@ namespace GaiaDanmu
 				runningMSGThread.Start();
 			}
 			timer=new System.Timers.Timer();
-			timer.Interval=1000*25;
+			timer.Interval=1000*15;
 			timer.Elapsed+=SendMessage;
 			timer.Start();
 		}

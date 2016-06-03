@@ -278,13 +278,13 @@ namespace ZQDanmuTest
 			string info = "";
 			if (initialServer.RUN_CONNECTION) {
 				info = "启动接收";
-				btn_Send.Text = "停止";
+				btn_Stop.Text = "停止";
 				StartInitial();
 			} else {
 				info = "停止接收";
 				initialServer.Disposed();
 				Thread.Sleep(1000);
-				btn_Send.Text = "启动";
+				btn_Stop.Text = "启动";
 			}
 			
 			ShowMessage(info);

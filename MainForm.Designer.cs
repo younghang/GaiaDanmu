@@ -15,7 +15,7 @@ namespace ZQDanmuTest
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
 		private System.Windows.Forms.RichTextBox richTextBox1;
-		private System.Windows.Forms.Button btn_Send;
+		private System.Windows.Forms.Button btn_Stop;
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.Button btn_SendMessage;
 		private System.Windows.Forms.CheckBox IPCheck;
@@ -45,7 +45,7 @@ namespace ZQDanmuTest
 		private void InitializeComponent()
 		{
 			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-			this.btn_Send = new System.Windows.Forms.Button();
+			this.btn_Stop = new System.Windows.Forms.Button();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.btn_SendMessage = new System.Windows.Forms.Button();
 			this.IPCheck = new System.Windows.Forms.CheckBox();
@@ -68,15 +68,15 @@ namespace ZQDanmuTest
 			this.richTextBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RichTextBox1MouseDown);
 			this.richTextBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RichTextBox1MouseUp);
 			// 
-			// btn_Send
+			// btn_Stop
 			// 
-			this.btn_Send.Location = new System.Drawing.Point(347, 485);
-			this.btn_Send.Name = "btn_Send";
-			this.btn_Send.Size = new System.Drawing.Size(72, 25);
-			this.btn_Send.TabIndex = 1;
-			this.btn_Send.Text = "停止";
-			this.btn_Send.UseVisualStyleBackColor = true;
-			this.btn_Send.Click += new System.EventHandler(this.Btn_SendClick);
+			this.btn_Stop.Location = new System.Drawing.Point(347, 485);
+			this.btn_Stop.Name = "btn_Stop";
+			this.btn_Stop.Size = new System.Drawing.Size(72, 25);
+			this.btn_Stop.TabIndex = 1;
+			this.btn_Stop.Text = "停止";
+			this.btn_Stop.UseVisualStyleBackColor = true;
+			this.btn_Stop.Click += new System.EventHandler(this.Btn_SendClick);
 			// 
 			// textBox1
 			// 
@@ -134,6 +134,7 @@ namespace ZQDanmuTest
 			// 
 			// MainForm
 			// 
+			this.AcceptButton = this.btn_SendMessage;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(597, 510);
@@ -143,7 +144,7 @@ namespace ZQDanmuTest
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.btn_SendMessage);
 			this.Controls.Add(this.btn_DanmuSave);
-			this.Controls.Add(this.btn_Send);
+			this.Controls.Add(this.btn_Stop);
 			this.Controls.Add(this.richTextBox1);
 			this.Name = "MainForm";
 			this.Text = "GaiaDanmu";
