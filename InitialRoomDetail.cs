@@ -19,66 +19,72 @@ namespace ZQDanmuTest
 	/// </summary>
 	public class InitialRoomDetial
 	{
-		public InitialRoomDetial()
+		public InitialRoomDetial(ref ManualResetEvent roomFinish)
 		{
-			thInitial=new Thread(new ThreadStart(Initial));
-			worklog=new WorkLogin();
+			thInitial = new Thread(new ThreadStart(Initial));
+			roomfinish = roomFinish;
+			worklog = new WorkLogin();
 			thInitial.Start();
 		}
+		ManualResetEvent roomfinish;
 		WorkLogin worklog;
-		public   bool FINISH_INITIAL_ROOM=false;
+		public   bool FINISH_INITIAL_ROOM = false;
 		void Initial()
 		{
- 
-			if (ReadCookie()) {
-				roomdetail=worklog.GetRoomDetail(Uid,log);
-			}
-			else
-			roomdetail=worklog.GetRoomDetail();
-			FINISH_INITIAL_ROOM=true;
+		 
+				
+			
+				if (ReadCookie()) {
+					roomdetail = worklog.GetRoomDetail(Uid, log);
+				} else
+					roomdetail = worklog.GetRoomDetail();
+				FINISH_INITIAL_ROOM = true;
+				if (roomfinish != null) {
+					roomfinish.Set();
+				}
+			  
+			
 		}
 		Thread thInitial;
 		public RoomDetail GetRoomDetail()
 		{			
 			return roomdetail;
 		}
-			int Uid=0;
-			string log="";
+		int Uid = 0;
+		string log = "";
 		public bool ReadCookie()
 		{
-			string str="";
+			string str = "";
 			string uid;
-			try
-			{
-			str=File.ReadAllText("cookie.txt");
+			try {
+				str = File.ReadAllText("cookie.txt");
 			
+			} catch {
+				str = "";
 			}
-			catch{
-				str="";
-			}
-			if (str!="") {
+			if (str != "") {
  
-				string uidReg="tj_uid=[0-9]+";
-				uid=Regex.Match(str, uidReg).Groups[0].Value;
-				uid=uid.Split('=')[1];
-				string log1Reg="PHPSESSID=.+;";
-				string log1=Regex.Match(str, log1Reg).Groups[0].Value;
-				log1=log1.Substring(10,log1.Length-11);
-				string log2Reg="ZQ_GUID=.+;";
-				string log2=Regex.Match(str, log2Reg).Groups[0].Value;
-				log2=log2.Substring(8,log2.Length-9);
+				string uidReg = "tj_uid=[0-9]+";
+				uid = Regex.Match(str, uidReg).Groups[0].Value;
+				uid = uid.Split('=')[1];
+				string log1Reg = "PHPSESSID=.+;";
+				string log1 = Regex.Match(str, log1Reg).Groups[0].Value;
+				log1 = log1.Substring(10, log1.Length - 11);
+				string log2Reg = "ZQ_GUID=.+;";
+				string log2 = Regex.Match(str, log2Reg).Groups[0].Value;
+				log2 = log2.Substring(8, log2.Length - 9);
 			 
-				log=log1+"."+log2;
-				Uid=int.Parse(uid);
+				log = log1 + "." + log2;
+				Uid = int.Parse(uid);
 				
 			}
-			if (str=="") {
+			if (str == "") {
 				return false;
 			}
 			return true;
 			
 		}
 		
-		RoomDetail roomdetail=null;
+		RoomDetail roomdetail = null;
 	}
 }

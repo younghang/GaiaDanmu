@@ -75,6 +75,8 @@
   <ItemGroup>
     <Compile Include="Channel.cs" />
     <Compile Include="ChatServerIP.cs" />
+    <Compile Include="DanmuMessage.cs" />
+    <Compile Include="DanmuProvider.cs" />
     <Compile Include="FireWorksList.cs" />
     <Compile Include="FireWorksList.Designer.cs">
       <DependentUpon>FireWorksList.cs</DependentUpon>

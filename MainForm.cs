@@ -27,7 +27,10 @@ namespace ZQDanmuTest
 	public partial class MainForm : Form
 	{
 		public static bool RUNNING = true;
-		int timeStart=0;
+		int timeStart = 0;
+		ManualResetEvent roomFinish = new ManualResetEvent(false);
+		ManualResetEvent gaiaroomFinish = new ManualResetEvent(false);
+//		DanmuProvider danmuProvider;
 		public MainForm()
 		{
 			//
@@ -35,9 +38,9 @@ namespace ZQDanmuTest
 			//
 			InitializeComponent();
 //				MessageBox.Show("有新版本，请去贴吧下载，扬co发的女王那个贴子或者这里http://yun.baidu.com/share/link?shareid=3067013852&uk=3514645625");
-				                                               		
+			timeStart = int.Parse(GetTimeStamp());
 			StartInitial();
-			
+		
 //			Data data=new Data();
 //		data.uid=0;
 //			data.gid=1861100490;
@@ -75,24 +78,24 @@ namespace ZQDanmuTest
 		{
 			if (checkUpdateThread == null || !checkUpdateThread.IsAlive) {
 				checkUpdateThread = new Thread(new ThreadStart(() => {
-				                                               	try {
-				                                               		int NewVersion = int.Parse(new WorkLogin().GetUpdate());
-				                                               		if (NewVersion > DanmuVersion) {
-				                                               			MessageBox.Show("有新版本，请去贴吧下载，扬co发的女王那个贴子或者这里http://yun.baidu.com/share/link?shareid=3067013852&uk=3514645625");
-				                                               			ShowMessage("有新版本，请去贴吧下载，扬co发的女王那个贴子");
-				                                               		} else
-				                                               			ShowMessage("没有更新");
-				                                               	} catch {
-				                                               		ShowMessage("检查更新失败");
-				                                               	}
-				                                               }));
+					try {
+						int NewVersion = int.Parse(new WorkLogin().GetUpdate());
+						if (NewVersion > DanmuVersion) {
+							MessageBox.Show("有新版本，请去贴吧下载，扬co发的女王那个贴子或者这里http://yun.baidu.com/share/link?shareid=3067013852&uk=3514645625");
+							ShowMessage("有新版本，请去贴吧下载，扬co发的女王那个贴子");
+						} else
+							ShowMessage("没有更新");
+					} catch {
+						ShowMessage("检查更新失败");
+					}
+				}));
 			}
 			checkUpdateThread.Start();
 			//主线程在这里启动了三个线程，一个等待检测其他两个完成，两个用于初始化相关数据
 			
 			ShowMessage("初始化用户认证的数据。。。");
-			initialroom = new InitialRoomDetial();
-			initialGaiaroom = new InitialGaiaRoom();
+			initialroom = new InitialRoomDetial(ref  roomFinish);
+			initialGaiaroom = new InitialGaiaRoom(ref gaiaroomFinish);
 			if (initailSidThread == null || !initailSidThread.IsAlive)
 				initailSidThread = new Thread(new  ThreadStart(InitialRoom));
 			initailSidThread.Start();
@@ -100,9 +103,12 @@ namespace ZQDanmuTest
 		}
 		void InitialRoom()
 		{
-			while (!initialroom.FINISH_INITIAL_ROOM || !initialGaiaroom.FINISH_INITIAL_GAIA_ROOM) {
-				
-			}
+//			while (!initialroom.FINISH_INITIAL_ROOM || !initialGaiaroom.FINISH_INITIAL_GAIA_ROOM) {
+//
+//			}
+			ShowMessage("等待中");
+			roomFinish.WaitOne();
+			gaiaroomFinish.WaitOne();
 			initialGaiaroom.FINISH_INITIAL_GAIA_ROOM = false;
 			initialroom.FINISH_INITIAL_ROOM = false;
 			ShowMessage("初始化相关信息完成");
@@ -151,12 +157,12 @@ namespace ZQDanmuTest
 			initialServer.ConnectServerStep4();
 			if (login != "") {
 				ShowMessage("登陆文件存在，尝试用户登陆");
-				initialServer.ConnectServerStep5("0.0");
+				initialServer.SendDanmuToServer("0.0");
 			}
 			
 //			initialServer.ConnectServerStep4("1+2");
 			initialServer.RunConnection();
-			timeStart=int.Parse(GetTimeStamp());
+			
 			
 			//为了发送弹幕,其实没必要，这样会让CPU保持20%的运行，线程自己活着在
 //			while(RUNNING)
@@ -173,10 +179,10 @@ namespace ZQDanmuTest
 //			}
 		}
 		
-//		int isInShow = 0;
-//		Random ran = new Random();
+		//		int isInShow = 0;
+		//		Random ran = new Random();
 		FireWorksList fl = null;
-		List<string> StringMsglist=new List<string>();
+		List<string> StringMsglist = new List<string>();
 		void AppendNewMessageToList(string x)
 		{
 			int pos = x.IndexOf(':');
@@ -199,14 +205,14 @@ namespace ZQDanmuTest
 			}
 //			isInShow++;
 //			if (isInShow > 1) {
-//				
+//
 //				int timeLong = ran.Next(20, 200);
 //				Thread.Sleep(20 + timeLong);
-//				
+//
 //			}
 			this.richTextBox1.AppendText(x + "\n");
-			string str=GetTimeStamp();
-			StringMsglist.Add(x+"$"+str);
+			string str = GetTimeStamp();
+			StringMsglist.Add(x + "$" + str);
 			if (x.Contains("::")) {
 				richTextBox1.Select(len, pos);
 				richTextBox1.SelectionColor = Color.LimeGreen;
@@ -290,6 +296,39 @@ namespace ZQDanmuTest
 			ShowMessage(info);
 			RUNNING = !RUNNING;
 		}
+		void Btn_StopClick(object sender, EventArgs e)
+		{
+//		string info = "";
+//			if (initialServer.RUN_CONNECTION) {
+//				info = "启动接收";
+//				btn_Stop.Text = "停止";
+//				StartInitial();
+//			} else {
+//				info = "停止接收";
+//				danmuProvider.StopDanmu();
+//				Thread.Sleep(1000);
+//				btn_Stop.Text = "启动";
+//			}
+//			
+//			ShowMessage(info);
+//			RUNNING = !RUNNING;
+			initialServer.RUN_CONNECTION = !initialServer.RUN_CONNECTION;
+			
+			string info = "";
+			if (initialServer.RUN_CONNECTION) {
+				info = "启动接收";
+				btn_Stop.Text = "停止";
+				StartInitial();
+			} else {
+				info = "停止接收";
+				initialServer.Disposed();
+				Thread.Sleep(1000);
+				btn_Stop.Text = "启动";
+			}
+			
+			ShowMessage(info);
+			RUNNING = !RUNNING;
+		}
 
 
 		void Btn_SendMessageClick(object sender, EventArgs e)
@@ -305,7 +344,7 @@ namespace ZQDanmuTest
 			}
 			initialServer.MESSAGE = true;
 			strMessage = textBox1.Text;
-			initialServer.ConnectServerStep5(strMessage);
+			initialServer.SendDanmuToServer(strMessage);
 			initialServer.MESSAGE = false;
 		}
 		void RichTextBox1TextChanged(object sender, EventArgs e)
@@ -335,6 +374,7 @@ namespace ZQDanmuTest
 				
 			}
 			
+//			2.danmuProvider.StopDanmu();
 		}
 
 
@@ -384,14 +424,14 @@ namespace ZQDanmuTest
 		}
 		void btn_SaveDanmu(object sender, EventArgs e)
 		{
-				DateTime dt = DateTime.Now;
-			string FilePath   = dt.Year + "-" + dt.Month + "-" + dt.Day + "-" + dt.Hour.ToString() + "@" + dt.Minute.ToString() + "@" + dt.Second;
+			DateTime dt = DateTime.Now;
+			string FilePath = dt.Year + "-" + dt.Month + "-" + dt.Day + "-" + dt.Hour.ToString() + "@" + dt.Minute.ToString() + "@" + dt.Second;
 			
-			FilePath = "./"+FilePath+"danmu.xml";
+			FilePath = "./" + FilePath + "danmu.xml";
 			ShowMessage("开始生成文件,可能会非常耗时，请耐心等待");
 			GenerateXMLFile(FilePath);
 			ShowMessage("生成文件完成");
-			 
+			
 		}
 		public   void GenerateXMLFile(string fileName)
 		{
@@ -440,12 +480,12 @@ namespace ZQDanmuTest
 				secondLevelElement16.InnerText = "8000";
 				rootElement.AppendChild(secondLevelElement16);
 				foreach (var element in StringMsglist) {
-					string msg=element.Split('$')[0];
-					string time=element.Split('$')[1];
-					int Timespan=int.Parse(time)-timeStart;
-					XmlElement message=myXmlDoc.CreateElement("d");
-					message.SetAttribute("p",Timespan+",1,25,16777215,"+time+",0,0,0");
-					message.InnerText=msg;
+					string msg = element.Split('$')[0];
+					string time = element.Split('$')[1];
+					int Timespan = int.Parse(time) - timeStart;
+					XmlElement message = myXmlDoc.CreateElement("d");
+					message.SetAttribute("p", Timespan + ",1,25,16777215," + time + ",0,0,0");
+					message.InnerText = msg;
 					rootElement.AppendChild(message);
 					
 				}
@@ -476,93 +516,14 @@ namespace ZQDanmuTest
 				Console.WriteLine(ex.ToString());
 			}
 		}
-
-		
-
-
-
-		#region MD5测试
-
-		public  string   GetMD5(string   myString)
+		void MainFormLoad(object sender, EventArgs e)
 		{
-			MD5 md5 = new   MD5CryptoServiceProvider();
-			byte[] fromData = System.Text.Encoding.Unicode.GetBytes(myString);
-			byte[] targetData = md5.ComputeHash(fromData);
-			string byte2String = null;
-			
-			for (int i = 0; i < targetData.Length; i++) {
-				byte2String += targetData[i].ToString("x");
-			}
-			
-			return   byte2String;
-		}
-		public string GetMDfive(string s)
-		{
-			
-			MD5 md = new MD5CryptoServiceProvider();
-			byte[] ss = md.ComputeHash(Encoding.UTF8.GetBytes(s));
-			return byteArrayToHexString(ss);
-			
-		}
-		public  void TestMD5()
-		{
-			string a; //加密前数据
-			a = 107616417 + 1798171239 + ">y,V4{{][$@s]qS3" + 1463742150;
-			
-			string b; //加密后数据
-//			b = System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(a, "MD5");
-//			byte[] result = Encoding.Default.GetBytes(a.Trim());    //tbPass为输入密码的文本框
-//			MD5 md5 = new MD5CryptoServiceProvider();
-//			byte[] output = md5.ComputeHash(result);
-//			b = BitConverter.ToString(output).Replace("-","");  //tbMd5pass为输出加密文本的文本框
-			b = GetMDfive(a);
-			b = b.ToLower();
-			byte[] bytes = Encoding.Default.GetBytes(b);
-			string c = Convert.ToBase64String(bytes);
-			richTextBox1.Text = c;
-		}
-
-		private static string[] HexCode = {
-			"0",
-			"1",
-			"2",
-			"3",
-			"4",
-			"5",
-			"6",
-			"7",
-			"8",
-			"9",
-			"a",
-			"b",
-			"c",
-			"d",
-			"e",
-			"f"
-		};
-
-
-		public static string byteToHexString(byte b)
-		{
-			int n = b;
-			if (n < 0) {
-				n = 256 + n;
-			}
-			int d1 = n / 16;
-			int d2 = n % 16;
-			return HexCode[d1] + HexCode[d2];
-		}
-
-		public static String byteArrayToHexString(byte[] b)
-		{
-			String result = "";
-			for (int i = 0; i < b.Length; i++) {
-				result = result + byteToHexString(b[i]);
-			}
-			return result;
+//		danmuProvider=new DanmuProvider();
+//			danmuProvider.StartDanmu();
+//			danmuProvider.ShowMessage+=ShowMessage;
 		}
 		
-		#endregion
+ 
 
 	}
 }

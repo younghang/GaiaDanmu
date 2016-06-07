@@ -43,7 +43,7 @@ namespace GaiaDanmu
 				Msgcount=0;
 			}
 			
-			initialServer.ConnectServerStep5(msg[Msgcount]);
+			initialServer.SendDanmuToServer(msg[Msgcount]);
 			Msgcount++;
 		}
 		static List<string> msg=new List<string>{"我爱大哥，民那都喜欢大哥","0.0","大哥最棒了"};
@@ -62,13 +62,15 @@ namespace GaiaDanmu
 			timer.Start();
 		}
 		int fireMsgCount=0;
+		ManualResetEvent roomFinish=new ManualResetEvent(false);
+		ManualResetEvent gaiaroomFinish=new ManualResetEvent(false);
 		public  void StartInitial()
 		{
 			//主线程在这里启动了三个线程，一个等待检测其他两个完成，两个用于初始化相关数据
 		
 			ShowMessage("初始化用户认证的数据。。。");
-			initialroom = new InitialRoomDetial();
-			initialGaiaroom = new InitialGaiaRoom(true);
+			initialroom = new InitialRoomDetial(ref roomFinish);
+			initialGaiaroom = new InitialGaiaRoom(ref gaiaroomFinish,true);
 			initialGaiaroom.otherRoomID=RoomID;
 			if (initailSidThread == null || !initailSidThread.IsAlive)
 				initailSidThread = new Thread(new  ThreadStart(InitialRoom));
@@ -76,9 +78,11 @@ namespace GaiaDanmu
 		}
 		void InitialRoom()
 		{
-			while (!initialroom.FINISH_INITIAL_ROOM || !initialGaiaroom.FINISH_INITIAL_GAIA_ROOM) {
-				
-			}
+//			while (!initialroom.FINISH_INITIAL_ROOM || !initialGaiaroom.FINISH_INITIAL_GAIA_ROOM) {
+//				
+//			}
+			roomFinish.WaitOne();
+			gaiaroomFinish.WaitOne();
 			initialGaiaroom.FINISH_INITIAL_GAIA_ROOM = false;
 			initialroom.FINISH_INITIAL_ROOM = false;
 			ShowMessage("初始化相关信息完成");

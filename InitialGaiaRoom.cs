@@ -18,13 +18,15 @@ namespace ZQDanmuTest
 	/// </summary>
 	public class InitialGaiaRoom
 	{
-		public InitialGaiaRoom(bool otherRoom=false)
+		public InitialGaiaRoom(ref ManualResetEvent gaiaFinish,bool otherRoom=false)
 		{
 			other_Room=otherRoom;
+			gaiafinish=gaiaFinish;
 			thInitial=new Thread(new ThreadStart(Initial));
 			worklog=new WorkLogin();
 			thInitial.Start();
 		}
+		ManualResetEvent gaiafinish=null;
 		bool other_Room=false;
 		WorkLogin worklog;
 		public string otherRoomID="";
@@ -48,6 +50,9 @@ namespace ZQDanmuTest
 				chatport=chatiplist.list[0].port;
 				chatRoomid=chatiplist.list[0].chatroom_id;
 				FINISH_INITIAL_GAIA_ROOM=true;
+				if (gaiafinish!=null) {
+					gaiafinish.Set();
+				}
 			}
 			
 		}

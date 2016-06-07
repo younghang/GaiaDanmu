@@ -76,7 +76,7 @@ namespace ZQDanmuTest
 			this.btn_Stop.TabIndex = 1;
 			this.btn_Stop.Text = "停止";
 			this.btn_Stop.UseVisualStyleBackColor = true;
-			this.btn_Stop.Click += new System.EventHandler(this.Btn_SendClick);
+			this.btn_Stop.Click += new System.EventHandler(this.Btn_StopClick);
 			// 
 			// textBox1
 			// 
@@ -150,6 +150,7 @@ namespace ZQDanmuTest
 			this.Text = "GaiaDanmu";
 			this.TopMost = true;
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainFormFormClosed);
+			this.Load += new System.EventHandler(this.MainFormLoad);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
