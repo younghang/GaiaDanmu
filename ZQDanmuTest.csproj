@@ -23,6 +23,7 @@
     <SignAssembly>False</SignAssembly>
     <AssemblyOriginatorKeyFile>&lt;Create...&gt;</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
+    <ApplicationIcon>www.ico.la_9ecf0e5381752f3dc4dadfa83808e9da_128X128.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -56,6 +57,12 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -67,9 +74,18 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +125,16 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BilibiliStyleDanmu\BilibiliStyleDanmu.csproj">
+      <Project>{33020CC6-4125-471D-9D4F-8FB99D5EC4C7}</Project>
+      <Name>BilibiliStyleDanmu</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OtherDanmuTest\OtherDanmuTest.csproj">
+      <Project>{DD254407-6844-4B3E-AEA0-DE1C2500B6A7}</Project>
+      <Name>OtherDanmuTest</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

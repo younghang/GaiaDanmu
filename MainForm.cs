@@ -15,8 +15,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using System.Xml;
+using BilibiliStyleDanmu;
 using Newtonsoft.Json.Linq;
+using OtherDanmuTest;
 using GaiaDanmu;
 
 namespace ZQDanmuTest
@@ -30,7 +33,9 @@ namespace ZQDanmuTest
 		int timeStart = 0;
 		ManualResetEvent roomFinish = new ManualResetEvent(false);
 		ManualResetEvent gaiaroomFinish = new ManualResetEvent(false);
-//		DanmuProvider danmuProvider;
+		DanmakuCurtain dmkCurt = null;
+		MainOverlay biliDanmu=null;
+		//		DanmuProvider danmuProvider;
 		public MainForm()
 		{
 			//
@@ -40,7 +45,7 @@ namespace ZQDanmuTest
 //				MessageBox.Show("有新版本，请去贴吧下载，扬co发的女王那个贴子或者这里http://yun.baidu.com/share/link?shareid=3067013852&uk=3514645625");
 			timeStart = int.Parse(GetTimeStamp());
 			StartInitial();
-		
+			
 //			Data data=new Data();
 //		data.uid=0;
 //			data.gid=1861100490;
@@ -49,11 +54,6 @@ namespace ZQDanmuTest
 //			 rom.data=data;
 			
 //			richTextBox1.AppendText(GetTimeStamp()+"\n");
-			
-			
-			
-			
-			
 			
 			
 		}
@@ -78,17 +78,17 @@ namespace ZQDanmuTest
 		{
 			if (checkUpdateThread == null || !checkUpdateThread.IsAlive) {
 				checkUpdateThread = new Thread(new ThreadStart(() => {
-					try {
-						int NewVersion = int.Parse(new WorkLogin().GetUpdate());
-						if (NewVersion > DanmuVersion) {
-							MessageBox.Show("有新版本，请去贴吧下载，扬co发的女王那个贴子或者这里http://yun.baidu.com/share/link?shareid=3067013852&uk=3514645625");
-							ShowMessage("有新版本，请去贴吧下载，扬co发的女王那个贴子");
-						} else
-							ShowMessage("没有更新");
-					} catch {
-						ShowMessage("检查更新失败");
-					}
-				}));
+				                                               	try {
+				                                               		int NewVersion = int.Parse(new WorkLogin().GetUpdate());
+				                                               		if (NewVersion > DanmuVersion) {
+				                                               			MessageBox.Show("有新版本，请去贴吧下载，扬co发的女王那个贴子或者这里http://yun.baidu.com/share/link?shareid=3067013852&uk=3514645625");
+				                                               			ShowMessage("有新版本，请去贴吧下载，扬co发的女王那个贴子");
+				                                               		} else
+				                                               			ShowMessage("没有更新");
+				                                               	} catch {
+				                                               		ShowMessage("检查更新失败");
+				                                               	}
+				                                               }));
 			}
 			checkUpdateThread.Start();
 			//主线程在这里启动了三个线程，一个等待检测其他两个完成，两个用于初始化相关数据
@@ -99,7 +99,6 @@ namespace ZQDanmuTest
 			if (initailSidThread == null || !initailSidThread.IsAlive)
 				initailSidThread = new Thread(new  ThreadStart(InitialRoom));
 			initailSidThread.Start();
-			
 		}
 		void InitialRoom()
 		{
@@ -118,7 +117,7 @@ namespace ZQDanmuTest
 			ShowMessage(showinfo);
 			string showGaiaroomInfo = initialGaiaroom.GetJsonGaiaRoom().ToString();
 //			ShowMessage(showGaiaroomInfo);
-//			ShowMessage("ip:" + initialGaiaroom.chatip);
+			ShowMessage("ip:" + initialGaiaroom.chatip);
 			ShowMessage("port:" + initialGaiaroom.chatport);
 			
 			//启动
@@ -188,9 +187,9 @@ namespace ZQDanmuTest
 			int pos = x.IndexOf(':');
 			int pos2 = x.IndexOf("::");
 			int len = richTextBox1.Text.Length;
-			if (!IPCheck.Checked && x.Contains(".")) {
-				x = x.Substring(0, x.Length - 15);
-			}
+//			if (!LeftBiliDanmuCheck.Checked && x.Contains(".")) {
+//				x = x.Substring(0, x.Length - 15);
+//			}
 			if (x.Contains("www.zhanqi.tv")) {
 				string rooid = x.Split('$')[1];
 				x = x.Split('$')[0];
@@ -210,18 +209,55 @@ namespace ZQDanmuTest
 //				Thread.Sleep(20 + timeLong);
 //
 //			}
+//			if (dmkCurt != null||biliDanmu!=null) {
+//				if (pos==-1) {
+//					pos=0;
+//				}else
+//					pos++;
+//				string strDanmu="";
+//				if(pos2!=-1)
+//				 strDanmu=x.Substring(pos,x.Length-pos);
+//				else
+//					strDanmu=x;
+//				if(dmkCurt!=null)
+//				ShootDanmaku(strDanmu);
+//				if (LeftBiliDanmuCheck.Checked&&biliDanmu!=null) {
+//					int posiont=strDanmu.IndexOf("::")+3;
+//					if (posiont==-1) {
+//						posiont=strDanmu.IndexOf(":")+1;
+//					}
+//					if (posiont==-1) {
+//						posiont=0;
+//					}
+//					string name=strDanmu.Substring(0,posiont);
+//					string text=strDanmu.Substring(posiont,strDanmu.Length-posiont);
+//					if (name.Contains("error")) {
+//						biliDanmu.AddDMText(name,text,true);
+//					}else
+//						biliDanmu.AddDMText(name,text);
+//				}
+//				
+//			}
+			
 			this.richTextBox1.AppendText(x + "\n");
 			string str = GetTimeStamp();
 			StringMsglist.Add(x + "$" + str);
+			string strName="";
+			string MessageText="";
+			try{
 			if (x.Contains("::")) {
 				richTextBox1.Select(len, pos);
 				richTextBox1.SelectionColor = Color.LimeGreen;
 				richTextBox1.Select(len + pos, pos2 - pos);
+				if(pos==pos2)
+					pos=-1;
+				strName=x.Substring(pos+1,pos2-pos-1);
 				richTextBox1.SelectionColor = Color.Blue;
 				richTextBox1.Select(len + pos2, x.Length - pos2);
+				MessageText=x.Substring(pos2+2,x.Length-pos2-2);
 				richTextBox1.SelectionColor = Color.Red;
 			} else if (x.Contains("error::")) {
-				richTextBox1.Select(len, x.Length);
+				richTextBox1.Select(len, x.Length);			 
 				richTextBox1.SelectionColor = Color.Red;
 			} else if (x.Contains("###")) {
 				richTextBox1.Select(len, x.Length);
@@ -230,16 +266,40 @@ namespace ZQDanmuTest
 				richTextBox1.Select(len, x.Length);
 				richTextBox1.SelectionColor = Color.DarkOrange;
 			}
+			if (strName=="") {
+				strName=x;
+			}
+			}
+			catch{
+				ShowMessage("error::处理消息出错");
+			}
+			
 			richTextBox1.SelectionColor = Color.Black;
 			
 			richTextBox1.SelectionBackColor = Color.White;
 			richTextBox1.HideSelection = false;
 //			isInShow--;
-			
+			if (dmkCurt!=null) {
+				ShootDanmaku(strName+"："+MessageText);
+			}
+			if (biliDanmu!=null&&LeftBiliDanmuCheck.Checked) {
+				biliDanmu.AddDMText(strName,MessageText);
+			}
 			
 		}
+//		private void ShootDanmaku(string text)
+//		{
+//			Thread NetServer = new Thread(new ThreadStart(()=>{dmkCurt.Shoot(text);}));
+		//      NetServer .SetApartmentState(ApartmentState.STA);
+		//      NetServer .IsBackground = true;
+//
+		//      NetServer.Start();
+//		}
 		void ShowMessage(string str)
 		{
+			if (String.IsNullOrEmpty(str)) {
+				return;
+			}
 			if (StopMessge) {
 				MessgeCount++;
 				listMsg.Add(str);
@@ -252,6 +312,7 @@ namespace ZQDanmuTest
 						// 或者
 						// Action<string> actionDelegate = delegate(string txt) { this.label2.Text = txt; };
 						this.lbl_NewMsg.Invoke(actionDelegate, str);
+						
 					} else {
 						this.lbl_NewMsg.Text = str;
 					}
@@ -266,11 +327,12 @@ namespace ZQDanmuTest
 						// 或者
 						// Action<string> actionDelegate = delegate(string txt) { this.label2.Text = txt; };
 						this.richTextBox1.Invoke(actionDelegate, str);
+						
 					} else {
 						this.richTextBox1.AppendText(str + "\n");
 					}
 				} catch {
-					ShowMessage("error::显示信息出错");
+//					ShowMessage("error::显示信息出错");
 				}
 			}
 
@@ -309,7 +371,7 @@ namespace ZQDanmuTest
 //				Thread.Sleep(1000);
 //				btn_Stop.Text = "启动";
 //			}
-//			
+//
 //			ShowMessage(info);
 //			RUNNING = !RUNNING;
 			initialServer.RUN_CONNECTION = !initialServer.RUN_CONNECTION;
@@ -324,6 +386,8 @@ namespace ZQDanmuTest
 				initialServer.Disposed();
 				Thread.Sleep(1000);
 				btn_Stop.Text = "启动";
+					roomFinish.Reset();
+			gaiaroomFinish.Reset();
 			}
 			
 			ShowMessage(info);
@@ -370,6 +434,15 @@ namespace ZQDanmuTest
 				if (runningMSGThread != null) {
 					runningMSGThread.Abort();
 				}
+				if (dmkCurt!=null) {
+					dmkCurt.Close();
+				}
+				if (biliDanmu!=null) {
+					biliDanmu.Close();
+				}
+				
+				Application.Exit();
+				
 			} catch {
 				
 			}
@@ -395,15 +468,6 @@ namespace ZQDanmuTest
 			listMsg.Clear();
 			lbl_NewMsg.Text = "咩有新消息";
 		}
-
-
-
-
-
-
-
-
-
 
 
 
@@ -495,7 +559,7 @@ namespace ZQDanmuTest
 				myXmlDoc.Save(fileName);
 			} catch (Exception ex) {
 				ShowMessage("生成文件出错  :" + ex.Message);
-				Console.WriteLine(ex.ToString());
+				Console.WriteLine(ex.ToString()+ex.StackTrace);
 			}
 		}
 		private static void AddXmlInformation(string xmlFilePath)
@@ -513,17 +577,89 @@ namespace ZQDanmuTest
 				//保存更改
 				myXmlDoc.Save(xmlFilePath);
 			} catch (Exception ex) {
-				Console.WriteLine(ex.ToString());
+				Console.WriteLine(ex.ToString()+ex.StackTrace);
 			}
 		}
 		void MainFormLoad(object sender, EventArgs e)
 		{
+			
+			
+			
 //		danmuProvider=new DanmuProvider();
 //			danmuProvider.StartDanmu();
 //			danmuProvider.ShowMessage+=ShowMessage;
 		}
+		bool ShowDanmu = false;
+		void CheckDeskDanmuCheckedChanged(object sender, EventArgs e)
+		{
+			
+			
+		}
 		
- 
+		void btn_DeskDanmuClick(object sender, EventArgs e)
+		{
+			
+//			deskWindow=new Window1();
+//			deskWindow.context= System.Windows.Application.Current;
+//			deskWindow.Show();
+//			ShowDanmu=true;
+			ShowDanmu=!ShowDanmu;
+			if (ShowDanmu) {
+				button1.Text="关闭弹幕";
+			}
+			else
+			{
+				button1.Text="桌面弹幕";
+			}
+			if (dmkCurt==null&&ShowDanmu) {
+				dmkCurt=new DanmakuCurtain(false);
+				dmkCurt.Show();
+			}
+			else
+			{
+				dmkCurt.Close();
+				dmkCurt=null;
+			}
+			
+		}
+		public  void ShootDanmaku(string text) {
+			//         Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => {
+			//                dmkCurt.Shoot(text);
+//
+			//            }));
+			dmkCurt.Shoot(text);
+			//Thread NetServer = new Thread(new ThreadStart(()=>dmkCurt.Shoot(text)));
+			//      NetServer .SetApartmentState(ApartmentState.STA);
+			//      NetServer .IsBackground = true;
+//
+			//      NetServer.Start();
+		}
+//		Thread showLeftDanmu=null;
+		void LeftBiliDanmuCheckCheckedChanged(object sender, EventArgs e)
+		{
+			if (LeftBiliDanmuCheck.Checked&&biliDanmu==null) {
+//				showLeftDanmu=new Thread(
+//					new ThreadStart(()=>
+//					                {
+				biliDanmu=new MainOverlay();
+				biliDanmu.OpenOverlay();
+				biliDanmu.Show();
+//					                }
+//					               ));
+//				showLeftDanmu.Start();
+				
+			}
+			else{
+				biliDanmu.Close();
+				biliDanmu=null;
+//				showLeftDanmu.Abort();
+//				showLeftDanmu=null;
+			}
+			
+		}
+		
+		
+		
 
 	}
 }
