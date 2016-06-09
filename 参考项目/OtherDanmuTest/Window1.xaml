@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="OtherDanmuTest.Window1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Title="OtherDanmuTest"
+	Height="300"
+	Width="300"
+	x:Name="window1"
+	Closed="window1_Closed">
+	<Grid>
+		<Button
+			Height="45"
+			Width="99"
+			RenderTransformOrigin="0.5303,0.4778"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Top"
+			Margin="8,207,0,0"
+			x:Name="button1"
+			Click="button1_Click"
+			Content="测试" />
+	</Grid>
+</Window>

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="BilibiliStyleDanmu.BiliDanmujiStyle" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Title="BilibiliStyleDanmu"
+	Height="300"
+	Width="300"
+	x:Name="window1"
+	Closed="window1_Closed"
+	Loaded="window1_Loaded">
+	<Grid>
+		<Button
+			Width="82"
+			Height="50"
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Bottom"
+			Margin="60,0,0,61"
+			x:Name="button1"
+			Click="button1_Click"
+			Content="测试" />
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition
+				Width="0.520689655172414*" />
+			<ColumnDefinition
+				Width="0.0724137931034482*" />
+			<ColumnDefinition
+				Width="0.406896551724138*" />
+		</Grid.ColumnDefinitions>
+	</Grid>
+</Window>
