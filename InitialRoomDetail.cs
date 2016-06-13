@@ -34,14 +34,14 @@ namespace ZQDanmuTest
 		 
 				
 			
-				if (ReadCookie()) {
-					roomdetail = worklog.GetRoomDetail(Uid, log);
-				} else
-					roomdetail = worklog.GetRoomDetail();
-				FINISH_INITIAL_ROOM = true;
-				if (roomfinish != null) {
-					roomfinish.Set();
-				}
+			if (ReadCookie()) {
+				roomdetail = worklog.GetRoomDetail(Uid, log);
+			} else
+				roomdetail = worklog.GetRoomDetail();
+			FINISH_INITIAL_ROOM = true;
+			if (roomfinish != null) {
+				roomfinish.Set();
+			}
 			  
 			
 		}
@@ -82,7 +82,6 @@ namespace ZQDanmuTest
 				return false;
 			}
 			return true;
-			
 		}
 		
 		RoomDetail roomdetail = null;
