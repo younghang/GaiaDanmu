@@ -83,7 +83,7 @@ namespace ZQDanmuTest
 			}
 			//等待300m秒钟
 			Thread.Sleep(200);
-			//通过clientSocket接收数据			
+			//通过clientSocket接收数据
 			
 		}
 		public void GetResponse()
@@ -93,7 +93,7 @@ namespace ZQDanmuTest
 				ShowMessage("Socket 没有了");
 				return;
 			}
-			   
+			
 			if (serverSocket.Blocking) {
 				StateObject state = new StateObject();
 				state.workSocket = serverSocket;
@@ -107,58 +107,58 @@ namespace ZQDanmuTest
 //				ShowMessage("没有收到消息");
 //				return;
 //			}
- 
+			
 		}
 		void  GetCallBack(IAsyncResult ar)
 		{
-				try{
+			try{
 				
-			// 从异步state对象中获取state和socket对象.
-			StateObject state = (StateObject)ar.AsyncState;
-			Socket handler = state.workSocket;
+				// 从异步state对象中获取state和socket对象.
+				StateObject state = (StateObject)ar.AsyncState;
+				Socket handler = state.workSocket;
 
-			// 从客户socket读取数据.
-		
-			int bytesRead = handler.EndReceive(ar);
-			if (bytesRead > 0) {
-
-				// 如果接收到数据，则存起来
-				byte[] tmp = new byte[bytesRead];
-				System.Buffer.BlockCopy(state.buffer, 0, tmp, 0, bytesRead);
-				state.byteSource.AddRange(tmp);
+				// 从客户socket读取数据.
 				
+				int bytesRead = handler.EndReceive(ar);
+				if (bytesRead > 0) {
 
-			} else {
+					// 如果接收到数据，则存起来
+					byte[] tmp = new byte[bytesRead];
+					System.Buffer.BlockCopy(state.buffer, 0, tmp, 0, bytesRead);
+					state.byteSource.AddRange(tmp);
+					
 
-				// 接收未完成，继续接收.
-				ShowMessage("error::接收出错");			 
+				} else {
 
-			}
-			
-			//新建线程处理接收到的消息
-			byte[] buffer = state.byteSource.ToArray();
-			Thread messageDealThread = new Thread(new ParameterizedThreadStart(GetChatResponse));
-			messageDealThread.Start(buffer);
-			
-			//下一次接收
-			state.byteSource.Clear();
-			serverSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-			                     new AsyncCallback(GetCallBack), state);
+					// 接收未完成，继续接收.
+					ShowMessage("error::接收出错");
+
+				}
+				
+				//新建线程处理接收到的消息
+				byte[] buffer = state.byteSource.ToArray();
+				Thread messageDealThread = new Thread(new ParameterizedThreadStart(GetChatResponse));
+				messageDealThread.Start(buffer);
+				
+				//下一次接收
+				state.byteSource.Clear();
+				serverSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+				                          new AsyncCallback(GetCallBack), state);
 			}
 			catch(Exception e)
 			{
-				ShowMessage("error::接收出错");	
+				ShowMessage("error::接收出错");
 				return;
 			}
 			
- 
+			
 		}
 		public void ConnectServerStep1()		{
 
 			ShowMessage("向服务器发送消息1");
 			JObject jsonObject = new JObject();
 			jsonObject.Add("cmdid", "svrisokreq");
-			SendJsonToServer(jsonObject, (byte)0xe8, (byte)0x03);			
+			SendJsonToServer(jsonObject, (byte)0xe8, (byte)0x03);
 		}
 
 		public void ConnectServerStep2()
@@ -202,8 +202,8 @@ namespace ZQDanmuTest
 //				"\"ssid\":\""+room.GetSSID()+"\",\"roomdata\":{\"vdesc\":\"\",\"slevel\":{\"curexp\":\"1036\",\"nextexp\":\"15000\",\"opp\":0,\"levelexp\":\"0\",\"pos\":\"0\",\"leftexp\":\"13964\",\"nextname\":\"5\",\"keep\":\"\"," +
 //				"\"uid\":\""+room.data.uid+"\",\"level\":\"0\",\"name\":\"\"}," +
 //				"\"vlevel\":0},\"imei\":\""+randon+"94"+"\"}";
-			
- 
+				
+				
 			}
 			JObject jsonObject = (JObject)JObject.Parse(loginstring);
 //			ShowMessage(jsonObject.ToString());
@@ -301,7 +301,7 @@ namespace ZQDanmuTest
 		void GetChatResponse(object messagebyte)
 		{
 			byte[] buffer = messagebyte as byte[];
-					 String strJson;
+			String strJson;
 			int size;
 			JObject jsonObject;
 			try {
@@ -322,163 +322,167 @@ namespace ZQDanmuTest
 
 				jsonObject = JObject.Parse(strJson);
 				if (ShowDanmuMessage!=null) {
-						ShowDanmuMessage(jsonObject);
+					ShowDanmuMessage(jsonObject);
 				}
 				else{
-						try {			
-					 
-				string ShowInfo = "";
-				string cmdid = (string)jsonObject.GetValue("cmdid");
-				switch (cmdid) {
-					case "chatmessage":
-						string name = (string)jsonObject.GetValue("fromname");
-						string content = (string)jsonObject.GetValue("content");
-						int sLevel = 0;
-						if (jsonObject.GetValue("slevel") != null) {
-							sLevel = (int)jsonObject.GetValue("slevel");
-						}
+					try {
 						
+						string ShowInfo = "";
+						string cmdid = (string)jsonObject.GetValue("cmdid");
+						switch (cmdid) {
+							case "chatmessage":
+								string name = (string)jsonObject.GetValue("fromname");
+								string content = (string)jsonObject.GetValue("content");
+								int sLevel = 0;
+								if (jsonObject.GetValue("slevel") != null) {
+									sLevel = (int)jsonObject.GetValue("slevel");
+								}
+								
 
-						string strlevel = "";
-						string ip = (string)jsonObject.GetValue("ip");
-						int level;
-						string slevels = "";
-						string sPhone = "";
-						if (jsonObject.GetValue("extra") != null) {
-							sPhone = "▌";
-						}
-						if (sLevel > 15) {
-							slevels = "♢";
-						}
-						
-						if (jsonObject.GetValue("level") != null) {
-							level = (int)jsonObject["level"];
-							strlevel = "【御狐" + level.ToString() + "级】" + sPhone;
-						} else
-							strlevel = "";
-						int permission = (int)jsonObject.GetValue("permission");
-						string fangguan = "";
-						if (permission == 10) {
-							fangguan = "[房管]";
-						}
-						ShowInfo = slevels + fangguan + strlevel + ":" + name + ":: " + content ;
+								string strlevel = "";
+								string ip = (string)jsonObject.GetValue("ip");
+								int level;
+								string slevels = "";
+								string sPhone = "";
+								if (jsonObject.GetValue("extra") != null) {
+									sPhone = "▌";
+								}
+								if (sLevel > 15) {
+									slevels = "♢";
+								}
+								
+								if (jsonObject.GetValue("level") != null) {
+									level = (int)jsonObject["level"];
+									strlevel = "【御狐" + level.ToString() + "级】" + sPhone;
+								} else
+									strlevel = "";
+								int permission = (int)jsonObject.GetValue("permission");
+								string fangguan = "";
+								if (permission == 10) {
+									fangguan = "[房管]";
+								}
+								ShowInfo = slevels + fangguan + strlevel + ":" + name + ":: " + content ;
 //							ShowInfo = jsonObject.ToString();
-						break;
-					case "Gift.Use":
-						string nickname = (string)jsonObject["data"]["nickname"];
-						int count = (int)jsonObject["data"]["count"];
-						int roomId = (int)jsonObject["data"]["roomid"];
-						if (roomId != 52320) {
-							ShowInfo = "";
-							break;
+								break;
+							case "Gift.Use":
+								string nickname = (string)jsonObject["data"]["nickname"];
+								int count = (int)jsonObject["data"]["count"];
+								int roomId = (int)jsonObject["data"]["roomid"];
+								if (roomId != 52320) {
+									ShowInfo = "";
+									break;
+								}
+								
+								JObject json = (JObject)jsonObject.GetValue("data");
+								if (json.GetValue("level") != null) {
+									level = (int)jsonObject["data"]["level"];
+									strlevel = "御狐" + level.ToString() + "级";
+								} else
+									strlevel = "";
+								
+								name = (string)jsonObject["data"]["name"];
+								if (name == "大宝剑") {
+									ShowInfo = jsonObject.ToString();
+									break;
+								}
+								
+								ShowInfo =  strlevel+ " :" +nickname  + "\t#####：：送的" + name + ":X" + count;
+								break;
+							case "Level.FwList":
+								
+								ShowInfo = "";
+								break;
+							case "userupdate":
+								ShowInfo="";
+								break;
+							case "Gift.AprilSpecial":
+								
+								ShowInfo = "";
+								break;
+							case "timegiftupdate":
+								
+								ShowInfo = "";
+								break;
+							case "Level.Fans":
+								ShowInfo = "";
+								break;
+							case "useronline":
+								ShowInfo = "";
+								break;
+							case "timegiftbro":
+								string	gname = (string)jsonObject.GetValue("gname");
+								name = (string)jsonObject.GetValue("name");
+								count = (int)jsonObject.GetValue("cnt");
+								string unit = (string)jsonObject.GetValue("unit");
+								ShowInfo = name + "送给大哥" + count + unit + gname;
+								break;
+								
+							case "Car.Show":
+								ShowInfo = "";
+								break;
+							case "getuc":
+								ShowInfo = "";
+								break;
+							case "thirdchatmsg":
+								ShowInfo = "";
+								break;
+							case "blockusernotify":
+								string blockname = (string)jsonObject.GetValue("blockname");
+								ShowInfo = blockname + "被禁言" ;
+								break;
+							case "notefanslevel":
+								string fansname = (string)jsonObject["data"]["fansname"];
+								int fanslevel = (int)jsonObject["data"]["fanslevel"];
+								ShowInfo = fanslevel + "级:" + fansname + "进入直播间 ";
+								break;
+								
+							case "ticket":
+								ShowInfo = "";
+								break;
+							case "live":
+								ShowInfo = "";
+								break;
+							case "system":
+								ShowInfo = "";
+								break;
+							case "sysmsg":
+								content = (string)jsonObject.GetValue("content");
+								ShowInfo = content;
+								break;
+							case "Gift.Show":
+								nickname = (string)jsonObject["data"]["nickname"];
+								string action = (string)jsonObject["data"]["action"];
+								count = (int)jsonObject["data"]["count"];
+								string classifier = (string)jsonObject["data"]["classifier"];
+								name = (string)jsonObject["data"]["name"];
+								ShowInfo = nickname + ":给主播" + action + count + name + "               ";
+								break;
+							case "firebro":
+								string code = (string)jsonObject.GetValue("code");
+								string slevel = (string)jsonObject.GetValue("slevel");
+								
+								string roomid = ((int)jsonObject.GetValue("roomid")).ToString();
+								string url = "http://www.zhanqi.tv/" + code + "$" + roomid;
+								ShowInfo = "这里有烟花:" + url + "               ";
+								break;
+							default:
+								ShowInfo = jsonObject.ToString();
+								break;
+								
+						}
+						if (ShowInfo != "") {
+							ShowMessage(ShowInfo);
 						}
 						
-						JObject json = (JObject)jsonObject.GetValue("data");
-						if (json.GetValue("level") != null) {
-							level = (int)jsonObject["data"]["level"];
-							strlevel = "御狐" + level.ToString() + "级";
-						} else
-							strlevel = "";
+						return;
 						
-						name = (string)jsonObject["data"]["name"];
-						if (name == "大宝剑") {
-							ShowInfo = jsonObject.ToString();
-							break;
-						}
-						
-						ShowInfo =  strlevel+ " :" +nickname  + "\t#####：：送的" + name + ":X" + count;
-						break;
-					case "Level.FwList":
-						
-						ShowInfo = "";
-						break;
-					case "userupdate":
-						ShowInfo="";
-						break;
-					case "Gift.AprilSpecial":
-						
-						ShowInfo = "";
-						break;
-					case "timegiftupdate":
-						
-						ShowInfo = "";
-						break;
-					case "Level.Fans":
-						ShowInfo = "";
-						break;
-					case "useronline":
-						ShowInfo = "";
-						break;
-					case "timegiftbro":
-						string	gname = (string)jsonObject.GetValue("gname");
-						name = (string)jsonObject.GetValue("name");
-						count = (int)jsonObject.GetValue("cnt");
-						string unit = (string)jsonObject.GetValue("unit");
-						ShowInfo = name + "送给大哥" + count + unit + gname;
-						break;
-						
-					case "Car.Show":
-						ShowInfo = "";
-						break;
-					case "getuc":
-						ShowInfo = "";
-						break;
-					case "thirdchatmsg":
-						ShowInfo = "";
-						break;
-					case "blockusernotify":
-						string blockname = (string)jsonObject.GetValue("blockname");
-						ShowInfo = blockname + "被禁言" ;
-						break;
-					case "notefanslevel":
-						string fansname = (string)jsonObject["data"]["fansname"];
-						int fanslevel = (int)jsonObject["data"]["fanslevel"];
-						ShowInfo = fanslevel + "级:" + fansname + "进入直播间 ";
-						break;
-					case "live":
-						ShowInfo = "";
-						break;
-					case "system":
-						ShowInfo = "";
-						break;
-					case "sysmsg":
-						content = (string)jsonObject.GetValue("content");
-						ShowInfo = content;
-						break;
-					case "Gift.Show":
-						nickname = (string)jsonObject["data"]["nickname"];
-						string action = (string)jsonObject["data"]["action"];
-						count = (int)jsonObject["data"]["count"];
-						string classifier = (string)jsonObject["data"]["classifier"];
-						name = (string)jsonObject["data"]["name"];
-						ShowInfo = nickname + ":给主播" + action + count + name + "               ";
-						break;
-					case "firebro":
-						string code = (string)jsonObject.GetValue("code");
-						string slevel = (string)jsonObject.GetValue("slevel");
-						
-						string roomid = ((int)jsonObject.GetValue("roomid")).ToString();
-						string url = "http://www.zhanqi.tv/" + code + "$" + roomid;
-						ShowInfo = "这里有烟花:" + url + "               ";
-						break;
-					default:
-						ShowInfo = jsonObject.ToString();
-						break;
-						
-				}
-				if (ShowInfo != "") {
-					ShowMessage(ShowInfo);
+					}
+					catch(Exception){
+						ShowMessage("error::获取弹幕出错了");
+					}
+					
 				}
 				
-				return;
-		
-			}
-			catch(Exception){
-				ShowMessage("error::获取弹幕出错了");
-			}
-			
-				}
-		
 			}catch (OutOfMemoryException) {
 //				try {
 //					File.WriteAllBytes("./outofmemory.txt", buffer);
@@ -502,8 +506,8 @@ namespace ZQDanmuTest
 //				ShowMessage(e.Message );
 				ShowMessage("error::这条消息接收失败（其他原因）");
 			}
-				
-				
+			
+			
 		}
 		void SendJsonToServer(JObject localJSONObject1, byte byte10, byte byte11, bool beat = false)
 		{
@@ -568,7 +572,7 @@ namespace ZQDanmuTest
 				th2.Stop();
 				RUN_CONNECTION = false;
 				messageThread.Abort();
-				serverSocket.Shutdown(SocketShutdown.Both);				
+				serverSocket.Shutdown(SocketShutdown.Both);
 				serverSocket.Close();
 //				Thread.Sleep(1000);//Application.Current.Shutdown();
 			} catch (Exception e) {
@@ -595,27 +599,27 @@ namespace ZQDanmuTest
 //		void GetMessage()
 //		{
 //			try {
-//				
+//
 ////				while (true) {
-//				
+//
 ////					if (!RUN_CONNECTION) {
 ////				th.Stop();
 ////						break;
-//				
+//
 ////					}
-//			 
+//
 //				GetResponse();
-//				
-//				
+//
+//
 ////				}
-//				
-//				
+//
+//
 //			} catch (Exception) {
 //				ShowMessage("error::聊天连接异常，请退出");
 ////				Disposed();
 //				return;
 //			}
-//					
+//
 //		}
 // bool isWatch = true;
 //
