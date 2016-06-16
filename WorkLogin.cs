@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -33,11 +34,13 @@ namespace ZQDanmuTest
 		string userinfo_url = "http://www.zhanqi.tv/api/user/user.info";
 		string user_follow = "http://www.zhanqi.tv/api/user/follow.listall?";
 		string Gaia_room = "http://www.zhanqi.tv/api/static/live.roomid/52320.json";
+		string Other_room = "http://www.zhanqi.tv/api/static/live.roomid/";
 		string user_coin = "http://www.zhanqi.tv/api/user/rich.get?";
 		string fans_board = "http://www.zhanqi.tv/api/static/room.fansweekrank/52320-10.json";
 		string gaia_enter = "http://www.zhanqi.tv/api/user/record.watch?type=1&id=52320";
 		string sign_all = "http://www.zhanqi.tv/api/actives/signin/fans.sign?";
 		string follow_list = "http://www.zhanqi.tv/api/user/follow.listall";
+		string update="https://github.com/younghang/GaiaDanmu/blob/master/danmuupdate.txt";
 		
 		string get_room_view_anymouse = "http://www.zhanqi.tv/api/public/room.viewer?sid=&ver=2.6.8&os=3";
 		string get_room_view_login = "http://www.zhanqi.tv/api/public/room.viewer?ver=2.6.8&os=3&sid=";
@@ -137,7 +140,7 @@ namespace ZQDanmuTest
 			
 		}
 		
-		//获取房间详细
+		//获取用户认证详细
 		public RoomDetail GetRoomDetail()
 		{
 	 
@@ -159,7 +162,7 @@ namespace ZQDanmuTest
 			return roomdetail ;
 		 
 		}
-			//获取房间详细
+			//获取用户认证详细
 		public RoomDetail GetRoomDetail(int uid,string resi)
 		{
 	 
@@ -202,6 +205,11 @@ namespace ZQDanmuTest
 		{
 			return GetUrlJson(Gaia_room, false);
 		}
+		public JObject GetOtherRoom(string str)
+		{
+			return GetUrlJson(Other_room+str+".json", false);
+		}
+		
  
 		public JObject LogOut()
 		{
@@ -254,6 +262,23 @@ namespace ZQDanmuTest
 			return null;
 			
 			
+		}
+				/// <summary>
+		/// 检测更新 gaiadanmuversion=12#
+		/// </summary>
+		/// <param name="url">Get的URL</param>
+		/// <param name="needlogin">是否需要登陆 才能访问，默认需要true</param>
+		/// <returns>返回JObject对象 出错返回null</returns>
+		public string GetUpdate()
+		{
+			HttpWebResponse response = HttpHelper.CreateGetHttpResponse(update, timeout, null, null);	
+		 
+			string recievedata = HttpHelper.GetResponseString(response);
+			string versionReg="gaiadanmuversion=[0-9]+#";
+			string version=Regex.Match(recievedata, versionReg).Groups[0].Value;
+			version=version.Split('=')[1];
+			version=version.Substring(0,version.Length-1);
+			return version;	 
 		}
 	}
 }

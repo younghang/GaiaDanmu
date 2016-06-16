@@ -15,10 +15,15 @@ namespace ZQDanmuTest
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
 		private System.Windows.Forms.RichTextBox richTextBox1;
-		private System.Windows.Forms.Button btn_Send;
+		private System.Windows.Forms.Button btn_Stop;
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.Button btn_SendMessage;
-		private System.Windows.Forms.CheckBox IPCheck;
+		private System.Windows.Forms.CheckBox LeftBiliDanmuCheck;
+		private System.Windows.Forms.CheckBox fireCheck;
+		private System.Windows.Forms.Label lbl_NewMsg;
+		private System.Windows.Forms.Button btn_DanmuSave;
+//		private System.Windows.Forms.Button btn_DskDanmu;
+		private System.Windows.Forms.Button button1;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -41,11 +46,16 @@ namespace ZQDanmuTest
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-			this.btn_Send = new System.Windows.Forms.Button();
+			this.btn_Stop = new System.Windows.Forms.Button();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.btn_SendMessage = new System.Windows.Forms.Button();
-			this.IPCheck = new System.Windows.Forms.CheckBox();
+			this.LeftBiliDanmuCheck = new System.Windows.Forms.CheckBox();
+			this.fireCheck = new System.Windows.Forms.CheckBox();
+			this.lbl_NewMsg = new System.Windows.Forms.Label();
+			this.btn_DanmuSave = new System.Windows.Forms.Button();
+			this.button1 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// richTextBox1
@@ -55,22 +65,22 @@ namespace ZQDanmuTest
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this.richTextBox1.Location = new System.Drawing.Point(12, 1);
 			this.richTextBox1.Name = "richTextBox1";
-			this.richTextBox1.Size = new System.Drawing.Size(503, 487);
+			this.richTextBox1.Size = new System.Drawing.Size(573, 486);
 			this.richTextBox1.TabIndex = 0;
 			this.richTextBox1.Text = "";
 			this.richTextBox1.TextChanged += new System.EventHandler(this.RichTextBox1TextChanged);
-			this.richTextBox1.MouseEnter += new System.EventHandler(this.RichTextBox1MouseEnter);
-			this.richTextBox1.MouseLeave += new System.EventHandler(this.RichTextBox1MouseLeave);
+			this.richTextBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RichTextBox1MouseDown);
+			this.richTextBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.RichTextBox1MouseUp);
 			// 
-			// btn_Send
+			// btn_Stop
 			// 
-			this.btn_Send.Location = new System.Drawing.Point(366, 485);
-			this.btn_Send.Name = "btn_Send";
-			this.btn_Send.Size = new System.Drawing.Size(72, 25);
-			this.btn_Send.TabIndex = 1;
-			this.btn_Send.Text = "停止";
-			this.btn_Send.UseVisualStyleBackColor = true;
-			this.btn_Send.Click += new System.EventHandler(this.Btn_SendClick);
+			this.btn_Stop.Location = new System.Drawing.Point(347, 485);
+			this.btn_Stop.Name = "btn_Stop";
+			this.btn_Stop.Size = new System.Drawing.Size(72, 25);
+			this.btn_Stop.TabIndex = 1;
+			this.btn_Stop.Text = "停止";
+			this.btn_Stop.UseVisualStyleBackColor = true;
+			this.btn_Stop.Click += new System.EventHandler(this.Btn_StopClick);
 			// 
 			// textBox1
 			// 
@@ -89,29 +99,75 @@ namespace ZQDanmuTest
 			this.btn_SendMessage.UseVisualStyleBackColor = true;
 			this.btn_SendMessage.Click += new System.EventHandler(this.Btn_SendMessageClick);
 			// 
-			// IPCheck
+			// LeftBiliDanmuCheck
 			// 
-			this.IPCheck.Location = new System.Drawing.Point(444, 489);
-			this.IPCheck.Name = "IPCheck";
-			this.IPCheck.Size = new System.Drawing.Size(72, 19);
-			this.IPCheck.TabIndex = 3;
-			this.IPCheck.Text = "IP";
-			this.IPCheck.UseVisualStyleBackColor = true;
+			this.LeftBiliDanmuCheck.Location = new System.Drawing.Point(477, 465);
+			this.LeftBiliDanmuCheck.Name = "LeftBiliDanmuCheck";
+			this.LeftBiliDanmuCheck.Size = new System.Drawing.Size(113, 19);
+			this.LeftBiliDanmuCheck.TabIndex = 3;
+			this.LeftBiliDanmuCheck.Text = "右下角出现弹幕";
+			this.LeftBiliDanmuCheck.UseVisualStyleBackColor = true;
+			this.LeftBiliDanmuCheck.CheckedChanged += new System.EventHandler(this.LeftBiliDanmuCheckCheckedChanged);
+			// 
+			// fireCheck
+			// 
+			this.fireCheck.Location = new System.Drawing.Point(477, 440);
+			this.fireCheck.Name = "fireCheck";
+			this.fireCheck.Size = new System.Drawing.Size(108, 19);
+			this.fireCheck.TabIndex = 3;
+			this.fireCheck.Text = "烟花测试";
+			this.fireCheck.UseVisualStyleBackColor = true;
+			// 
+			// lbl_NewMsg
+			// 
+			this.lbl_NewMsg.Location = new System.Drawing.Point(279, 1);
+			this.lbl_NewMsg.Name = "lbl_NewMsg";
+			this.lbl_NewMsg.Size = new System.Drawing.Size(124, 30);
+			this.lbl_NewMsg.TabIndex = 4;
+			this.lbl_NewMsg.Text = "label1";
+			this.lbl_NewMsg.Visible = false;
+			// 
+			// btn_DanmuSave
+			// 
+			this.btn_DanmuSave.Location = new System.Drawing.Point(518, 485);
+			this.btn_DanmuSave.Name = "btn_DanmuSave";
+			this.btn_DanmuSave.Size = new System.Drawing.Size(72, 25);
+			this.btn_DanmuSave.TabIndex = 1;
+			this.btn_DanmuSave.Text = "保存弹幕";
+			this.btn_DanmuSave.UseVisualStyleBackColor = true;
+			this.btn_DanmuSave.Click += new System.EventHandler(this.btn_SaveDanmu);
+			// 
+			// button1
+			// 
+			this.button1.Location = new System.Drawing.Point(434, 485);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(72, 25);
+			this.button1.TabIndex = 1;
+			this.button1.Text = "桌面弹幕";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.btn_DeskDanmuClick);
 			// 
 			// MainForm
 			// 
+			this.AcceptButton = this.btn_SendMessage;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(527, 511);
-			this.Controls.Add(this.IPCheck);
+			this.ClientSize = new System.Drawing.Size(597, 510);
+			this.Controls.Add(this.lbl_NewMsg);
+			this.Controls.Add(this.fireCheck);
+			this.Controls.Add(this.LeftBiliDanmuCheck);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.btn_SendMessage);
-			this.Controls.Add(this.btn_Send);
+			this.Controls.Add(this.button1);
+			this.Controls.Add(this.btn_DanmuSave);
+			this.Controls.Add(this.btn_Stop);
 			this.Controls.Add(this.richTextBox1);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MainForm";
 			this.Text = "GaiaDanmu";
 			this.TopMost = true;
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainFormFormClosed);
+			this.Load += new System.EventHandler(this.MainFormLoad);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

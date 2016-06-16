@@ -1,0 +1,3 @@
+<Window xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="BilibiliStyleDanmu.MainOverlay" Name="Window" Title="MainOverlay" WindowStyle="None" AllowsTransparency="True" Background="{x:Null}" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" >
+  <StackPanel  Name="LayoutRoot" VerticalAlignment="Bottom" SnapsToDevicePixels="True" />
+</Window>
